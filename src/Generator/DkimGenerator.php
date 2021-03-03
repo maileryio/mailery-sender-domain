@@ -7,6 +7,7 @@ use Mesour\DnsChecker\DnsRecordType;
 use Mailery\Sender\Domain\Enum\DnsRecordSubType;
 use Mailery\Sender\Domain\Generator\GeneratorInterface;
 use Mailery\Storage\Service\StorageService;
+use Mailery\Storage\ValueObject\FileValueObject;
 
 class DkimGenerator implements GeneratorInterface
 {
@@ -69,7 +70,11 @@ class DkimGenerator implements GeneratorInterface
         $pkDetails = openssl_pkey_get_details($pk);
         file_put_contents($pubKeyFilePath, $pkDetails['key']);
 
-        $this->storageService->create();
+        $this->storageService->create(
+            (new FileValueObject())
+                ->withBrand($valueObject->getBrand())
+                ->withBucket($this->bucket)
+        );
         var_dump($privKeyFilePath, $pubKeyFilePath);exit;
 
         return new DnsRecord(

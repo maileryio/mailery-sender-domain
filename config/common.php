@@ -19,7 +19,6 @@ use Yiisoft\Factory\Definitions\Reference;
 
 return [
     SpfGenerator::class => [
-        '__class' => SpfGenerator::class,
         '__construct()' => [
             'domainSpec' => $params['maileryio/mailery-sender-domain']['spf-domain-spec'],
             'dnsResolver' => Reference::to(StandardResolver::class),
@@ -27,14 +26,12 @@ return [
     ],
 
     DkimGenerator::class => [
-        '__class' => DkimGenerator::class,
         '__construct()' => [
             'selector' => $params['maileryio/mailery-sender-domain']['dkim-selector'],
         ],
     ],
 
     GeneratorList::class => [
-        '__class' => GeneratorList::class,
         '__construct()' => [
             'generators' => [
                 Reference::to(SpfGenerator::class),
@@ -46,21 +43,18 @@ return [
     ],
 
     SpfChecker::class => [
-        '__class' => SpfChecker::class,
         '__construct()' => [
             'domainSpec' => $params['maileryio/mailery-sender-domain']['spf-domain-spec'],
         ],
     ],
 
     DkimChecker::class => [
-        '__class' => DkimChecker::class,
         '__construct()' => [
             'selector' => $params['maileryio/mailery-sender-domain']['dkim-selector'],
         ],
     ],
 
     CheckerList::class => [
-        '__class' => CheckerList::class,
         '__construct()' => [
             'checkers' => [
                 Reference::to(SpfChecker::class),
