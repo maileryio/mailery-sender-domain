@@ -10,7 +10,7 @@ return [
     ],
 
     'maileryio/mailery-sender-domain' => [
-        'spf-include' => '_spf.mailery.io',
+        'spf-domain-spec' => '_spf.mailery.io',
         'dkim-selector' => 'mailery',
     ],
 

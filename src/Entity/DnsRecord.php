@@ -46,7 +46,7 @@ class DnsRecord implements RoutableEntityInterface, LoggableEntityInterface, IDn
      * @Cycle\Annotated\Annotation\Column(type = "string(255)")
      * @var string
      */
-    private $subtype;
+    private $subType;
 
     /**
      * @Cycle\Annotated\Annotation\Column(type = "string(255)")
@@ -133,18 +133,18 @@ class DnsRecord implements RoutableEntityInterface, LoggableEntityInterface, IDn
     /**
      * @return string
      */
-    public function getSubtype(): string
+    public function getSubType(): string
     {
-        return $this->subtype;
+        return $this->subType;
     }
 
     /**
-     * @param string $subtype
+     * @param string $subType
      * @return self
      */
-    public function setSubtype(string $subtype): self
+    public function setSubType(string $subType): self
     {
-        $this->subtype = $subtype;
+        $this->subType = $subType;
 
         return $this;
     }

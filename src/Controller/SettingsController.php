@@ -130,7 +130,7 @@ class SettingsController
             return $this->responseFactory->createResponse(404);
         }
 
-        $dnsChecker->checkAll($domain->getDnsRecords());
+        $dnsChecker->checkAll($domain->getDomain(), $domain->getDnsRecords());
 
         return $this->responseFactory
             ->createResponse(Status::FOUND)

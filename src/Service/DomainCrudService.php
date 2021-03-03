@@ -7,8 +7,8 @@ use Cycle\ORM\Transaction;
 use Mailery\Sender\Domain\Entity\Domain;
 use Mailery\Sender\Domain\Entity\DnsRecord;
 use Mailery\Sender\Domain\ValueObject\DomainValueObject;
-use Mailery\Sender\Domain\Provider\DnsRecordsProvider;
-use Mesour\DnsChecker\DnsRecord as MesourDnsRecord;
+use Mailery\Sender\Domain\Model\GeneratorList;
+use Mailery\Sender\Domain\Generator\GeneratorInterface;
 use Yiisoft\Yii\Cycle\Data\Writer\EntityWriter;
 
 class DomainCrudService
@@ -19,20 +19,20 @@ class DomainCrudService
     private ORMInterface $orm;
 
     /**
-     * @var DnsRecordsProvider
+     * @var GeneratorList
      */
-    private DnsRecordsProvider $dnsRecordsProvider;
+    private GeneratorList $generatorList;
 
     /**
      * @param ORMInterface $orm
-     * @param DnsRecordsProvider $dnsRecordsProvider
+     * @param GeneratorList $generatorList
      */
     public function __construct(
         ORMInterface $orm,
-        DnsRecordsProvider $dnsRecordsProvider
+        GeneratorList $generatorList
     ) {
         $this->orm = $orm;
-        $this->dnsRecordsProvider = $dnsRecordsProvider;
+        $this->generatorList = $generatorList;
     }
 
     /**
@@ -99,20 +99,18 @@ class DomainCrudService
      */
     private function buildDnsRecords(Domain $domain): array
     {
-        $dnsRecords = [];
-        $dnsRecordsSet = $this->dnsRecordsProvider->getExpected($domain);
+        return $this->generatorList
+            ->map(function (GeneratorInterface $generator) use($domain) {
+                $dnsRecord = $generator->generate($domain->getDomain());
 
-        foreach ($dnsRecordsSet->getRecords() as $subtype => $item) {
-            /** @var MesourDnsRecord $item */
-            $dnsRecords[] = (new DnsRecord)
-                ->setDomain($domain)
-                ->setType($item->getType())
-                ->setSubtype($subtype)
-                ->setName($item->getName())
-                ->setContent($item->getContent())
-                ->setStatus(DnsRecord::STATUS_PENDING);
-        }
-
-        return $dnsRecords;
+                return (new DnsRecord())
+                    ->setDomain($domain)
+                    ->setType($generator->getType())
+                    ->setSubtype($generator->getSubType())
+                    ->setName($dnsRecord->getName())
+                    ->setContent($dnsRecord->getContent())
+                    ->setStatus(DnsRecord::STATUS_PENDING);
+            })
+            ->toArray();
     }
 }

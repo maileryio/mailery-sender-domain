@@ -9,6 +9,8 @@ use Mesour\DnsChecker\DnsRecordType;
 use Mesour\DnsChecker\Providers\DnsRecordProvider;
 use Cycle\ORM\ORMInterface;
 use Yiisoft\Yii\Cycle\Data\Writer\EntityWriter;
+use Mailery\Sender\Domain\Model\CheckerList;
+use Mailery\Sender\Domain\Checker\CheckerInterface;
 
 class DnsCheckerService
 {
@@ -18,17 +20,26 @@ class DnsCheckerService
     private ORMInterface $orm;
 
     /**
+     * @var CheckerList
+     */
+    private CheckerList $checkerList;
+
+    /**
      * @param ORMInterface $orm
      */
-    public function __construct(ORMInterface $orm)
-    {
+    public function __construct(
+        ORMInterface $orm,
+        CheckerList $checkerList
+    ) {
         $this->orm = $orm;
+        $this->checkerList = $checkerList;
     }
 
     /**
+     * @param string $domain
      * @param DnsRecordEntity[] $dnsRecords
      */
-    public function checkAll(iterable $dnsRecords)
+    public function checkAll(string $domain, iterable $dnsRecords)
     {
         $request = new DnsRecordRequest();
 
@@ -42,27 +53,12 @@ class DnsCheckerService
         $dnsRecordSet = $checker->getDnsRecordSetFromRequest($request);
 
         foreach ($dnsRecords as $dnsRecord) {
-            if (!$dnsRecordSet->hasRecord($dnsRecord)) {
-                $dnsRecord->setStatus(DnsRecordEntity::STATUS_NOT_FOUND);
-                continue;
-            }
+            /** @var CheckerInterface $checker */
+            $checker = $this->checkerList
+                ->filterBySubType($dnsRecord->getSubType())
+                ->first();
 
-            if ($dnsRecord->isMx() && $dnsRecordSet->getRecordsByType($dnsRecord->getType()) > 0) {
-                $dnsRecord->setStatus(DnsRecordEntity::STATUS_FOUND);
-                continue;
-            }
-
-            if ($dnsRecord->isSpf() && $dnsRecordSet->getRecordsByType($dnsRecord->getType()) > 0) {
-                foreach ($dnsRecordSet->getRecordsByType($dnsRecord->getType()) as $spfDnsRecord) {
-                    ;
-                }
-
-                $dnsRecord->setStatus(DnsRecordEntity::STATUS_FOUND);
-            }
-
-            if ($dnsRecordSet->hasRecord($dnsRecord)) {
-                $dnsRecord->setStatus(DnsRecordEntity::STATUS_FOUND);
-            } else if ($dnsRecord->isMx() && $dnsRecordSet->getRecordsByType($dnsRecord->getType()) > 0) {
+            if ($checker && $checker->check($domain, $dnsRecordSet)) {
                 $dnsRecord->setStatus(DnsRecordEntity::STATUS_FOUND);
             } else {
                 $dnsRecord->setStatus(DnsRecordEntity::STATUS_NOT_FOUND);

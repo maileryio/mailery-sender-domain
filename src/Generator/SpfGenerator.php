@@ -11,27 +11,45 @@ use SPFLib\Term\Mechanism\MxMechanism;
 use SPFLib\Term\Mechanism\IncludeMechanism;
 use Mesour\DnsChecker\DnsRecord;
 use Mesour\DnsChecker\DnsRecordType;
+use Mailery\Sender\Domain\Enum\DnsRecordSubType;
+use Mailery\Sender\Domain\Generator\GeneratorInterface;
 
-class SpfGenerator
+class SpfGenerator implements GeneratorInterface
 {
     /**
      * @var string
      */
-    private string $include;
+    private string $domainSpec;
 
     /**
      * @var Resolver
      */
-    private $dnsResolver;
+    private Resolver $dnsResolver;
 
     /**
-     * @param string $include
+     * @param string $domainSpec
      * @param Resolver $dnsResolver
      */
-    public function __construct(string $include, Resolver $dnsResolver)
+    public function __construct(string $domainSpec, Resolver $dnsResolver)
     {
-        $this->include = $include;
+        $this->domainSpec = $domainSpec;
         $this->dnsResolver = $dnsResolver;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType():string
+    {
+        return DnsRecordType::TXT;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubType():string
+    {
+        return DnsRecordSubType::SPF;
     }
 
     /**
@@ -71,7 +89,7 @@ class SpfGenerator
         $included = false;
 
         $fnDoInclude = function () use($record) {
-            $record->addTerm(new IncludeMechanism(Mechanism::QUALIFIER_PASS, $this->include));
+            $record->addTerm(new IncludeMechanism(Mechanism::QUALIFIER_PASS, $this->domainSpec));
         };
 
         foreach ($terms as $term) {
