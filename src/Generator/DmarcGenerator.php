@@ -6,6 +6,7 @@ use Mesour\DnsChecker\DnsRecord;
 use Mesour\DnsChecker\DnsRecordType;
 use Mailery\Sender\Domain\Enum\DnsRecordSubType;
 use Mailery\Sender\Domain\Generator\GeneratorInterface;
+use Mailery\Sender\Domain\Entity\Domain;
 
 class DmarcGenerator implements GeneratorInterface
 {
@@ -26,14 +27,14 @@ class DmarcGenerator implements GeneratorInterface
     }
 
     /**
-     * @param string $domain
+     * @param Domain $domain
      * @return DnsRecord
      */
-    public function generate(string $domain): DnsRecord
+    public function generate(Domain $domain): DnsRecord
     {
         return new DnsRecord(
             DnsRecordType::TXT,
-            sprintf('_dmarc.%s', $domain),
+            sprintf('_dmarc.%s', $domain->getDomain()),
             'v=DMARC1; p=none; rua=mailto:youremailaddress@yourdomain.tld'
         );
     }

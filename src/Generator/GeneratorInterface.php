@@ -3,6 +3,7 @@
 namespace Mailery\Sender\Domain\Generator;
 
 use Mesour\DnsChecker\DnsRecord;
+use Mailery\Sender\Domain\Entity\Domain;
 
 interface GeneratorInterface
 {
@@ -17,8 +18,8 @@ interface GeneratorInterface
     public function getSubType():string;
 
     /**
-     * @param string $domain
+     * @param Domain $domain
      * @return DnsRecord
      */
-    public function generate(string $domain): DnsRecord;
+    public function generate(Domain $domain): DnsRecord;
 }

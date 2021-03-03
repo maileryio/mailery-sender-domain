@@ -6,12 +6,13 @@ use Mailery\Activity\Log\Entity\LoggableEntityInterface;
 use Mailery\Activity\Log\Entity\LoggableEntityTrait;
 use Mailery\Brand\Entity\Brand;
 use Mailery\Common\Entity\RoutableEntityInterface;
+use Mailery\Sender\Domain\Entity\Dkim;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Cycle\Annotated\Annotation\Entity(
- *      table = "brand_domains",
+ *      table = "domains",
  *      repository = "Mailery\Sender\Domain\Repository\DomainRepository",
  *      mapper = "Mailery\Sender\Domain\Mapper\DefaultMapper"
  * )
@@ -43,6 +44,12 @@ class Domain implements RoutableEntityInterface, LoggableEntityInterface
      * @var Collection
      */
     private $dnsRecords;
+
+    /**
+     * @Cycle\Annotated\Annotation\Relation\HasOne(target = "Mailery\Sender\Domain\Entity\Dkim", nullable = false)
+     * @var Dkim
+     */
+    private $dkim;
 
     public function __construct()
     {
@@ -129,6 +136,25 @@ class Domain implements RoutableEntityInterface, LoggableEntityInterface
     public function setDnsRecords($dnsRecords): self
     {
         $this->dnsRecords = $dnsRecords;
+
+        return $this;
+    }
+
+    /**
+     * @return Dkim
+     */
+    public function getDkim(): Dkim
+    {
+        return $this->dkim;
+    }
+
+    /**
+     * @param Dkim $dkim
+     * @return self
+     */
+    public function setDkim(Dkim $dkim): self
+    {
+        $this->dkim = $dkim;
 
         return $this;
     }

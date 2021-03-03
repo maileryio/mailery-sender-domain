@@ -1,11 +1,19 @@
 <?php
 
+use Mailery\Sender\Domain\Model\DomainDkimBucket;
 use Yiisoft\Router\UrlGeneratorInterface;
+use Yiisoft\Factory\Definitions\Reference;
 
 return [
     'yiisoft/yii-cycle' => [
         'annotated-entity-paths' => [
             '@vendor/maileryio/mailery-sender-domain/src/Entity',
+        ],
+    ],
+
+    'maileryio/mailery-storage' => [
+        'buckets' => [
+            Reference::to(DomainDkimBucket::class),
         ],
     ],
 

@@ -13,6 +13,7 @@ use Mesour\DnsChecker\DnsRecord;
 use Mesour\DnsChecker\DnsRecordType;
 use Mailery\Sender\Domain\Enum\DnsRecordSubType;
 use Mailery\Sender\Domain\Generator\GeneratorInterface;
+use Mailery\Sender\Domain\Entity\Domain;
 
 class SpfGenerator implements GeneratorInterface
 {
@@ -53,14 +54,14 @@ class SpfGenerator implements GeneratorInterface
     }
 
     /**
-     * @param string $domain
+     * @param Domain $domain
      * @return DnsRecord
      */
-    public function generate(string $domain): DnsRecord
+    public function generate(Domain $domain): DnsRecord
     {
         try {
             $record = (new Decoder($this->dnsResolver))
-                ->getRecordFromDomain($domain);
+                ->getRecordFromDomain($domain->getDomain());
         } catch (\Exception $e) {}
 
         if (!empty($record)) {
@@ -74,7 +75,7 @@ class SpfGenerator implements GeneratorInterface
 
         return new DnsRecord(
             DnsRecordType::TXT,
-            $domain,
+            $domain->getDomain(),
             (string) $this->applyTerms(new Record(), $terms)
         );
     }

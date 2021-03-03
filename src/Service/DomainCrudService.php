@@ -46,9 +46,11 @@ class DomainCrudService
             ->setBrand($valueObject->getBrand())
         ;
 
+        $this->buildDnsRecords($domain);
+
         (new EntityWriter($this->orm))->write([
             $domain,
-            ...($this->buildDnsRecords($domain)),
+            ...$domain->getDnsRecords(),
         ]);
 
         return $domain;
@@ -72,7 +74,9 @@ class DomainCrudService
             $transaction->delete($entity);
         }
 
-        foreach ($this->buildDnsRecords($domain) as $entity) {
+        $this->buildDnsRecords($domain);
+
+        foreach ($domain->getDnsRecords() as $entity) {
             $transaction->persist($entity);
         }
 
@@ -101,7 +105,7 @@ class DomainCrudService
     {
         return $this->generatorList
             ->map(function (GeneratorInterface $generator) use($domain) {
-                $dnsRecord = $generator->generate($domain->getDomain());
+                $dnsRecord = $generator->generate($domain);
 
                 return (new DnsRecord())
                     ->setDomain($domain)

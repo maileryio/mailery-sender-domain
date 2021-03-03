@@ -11,7 +11,7 @@ use Mesour\DnsChecker\IDnsRecord;
 
 /**
  * @Cycle\Annotated\Annotation\Entity(
- *      table = "brand_domain_dns_records",
+ *      table = "domain_dns_records",
  *      repository = "Mailery\Sender\Domain\Repository\DnsRecordRepository",
  *      mapper = "Mailery\Sender\Domain\Mapper\DefaultMapper"
  * )
