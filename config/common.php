@@ -1,13 +1,13 @@
 <?php
 
-use Mailery\Channel\Email\Repository\DomainRepository;
+use Mailery\Sender\Domain\Repository\DomainRepository;
 use Psr\Container\ContainerInterface;
 use Cycle\ORM\ORMInterface;
 use SPFLib\DNS\StandardResolver;
-use Mailery\Channel\Email\Entity\Domain;
-use Mailery\Channel\Email\Generator\SpfGenerator;
-use Mailery\Channel\Email\Generator\DkimGenerator;
-use Mailery\Channel\Email\Model\DnsCheckerList;
+use Mailery\Sender\Domain\Entity\Domain;
+use Mailery\Sender\Domain\Generator\SpfGenerator;
+use Mailery\Sender\Domain\Generator\DkimGenerator;
+use Mailery\Sender\Domain\Model\DnsCheckerList;
 use Yiisoft\Factory\Definitions\Reference;
 
 return [

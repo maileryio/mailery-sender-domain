@@ -7,7 +7,7 @@ use Yiisoft\Di\Support\ServiceProvider;
 use Yiisoft\Router\RouteCollectorInterface;
 use Yiisoft\Router\Group;
 use Yiisoft\Router\Route;
-use Mailery\Channel\Email\Controller\SettingsController;
+use Mailery\Sender\Domain\Controller\SettingsController;
 
 final class RouteCollectorServiceProvider extends ServiceProvider
 {
