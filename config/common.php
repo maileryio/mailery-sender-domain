@@ -14,7 +14,7 @@ return [
     SpfGenerator::class => [
         '__class' => SpfGenerator::class,
         '__construct()' => [
-            'include' => $params['maileryio/mailery-channel-email']['spf-include'],
+            'include' => $params['maileryio/mailery-sender-domain']['spf-include'],
             'dnsResolver' => Reference::to(StandardResolver::class),
         ],
     ],
@@ -22,14 +22,14 @@ return [
     DkimGenerator::class => [
         '__class' => DkimGenerator::class,
         '__construct()' => [
-            'selector' => $params['maileryio/mailery-channel-email']['dkim-selector'],
+            'selector' => $params['maileryio/mailery-sender-domain']['dkim-selector'],
         ],
     ],
 
     DnsCheckerList::class => static function () use($params) {
         return new DnsCheckerList([
-            new SpfChecker($params['maileryio/mailery-channel-email']['spf-include']),
-            new DkimChecker($params['maileryio/mailery-channel-email']['dkim-selector']),
+            new SpfChecker($params['maileryio/mailery-sender-domain']['spf-include']),
+            new DkimChecker($params['maileryio/mailery-sender-domain']['dkim-selector']),
         ]);
     },
 
