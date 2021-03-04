@@ -130,10 +130,10 @@ class Domain implements RoutableEntityInterface, LoggableEntityInterface
     }
 
     /**
-     * @param Collection|array $dnsRecords
+     * @param Collection $dnsRecords
      * @return self
      */
-    public function setDnsRecords($dnsRecords): self
+    public function setDnsRecords(Collection $dnsRecords): self
     {
         $this->dnsRecords = $dnsRecords;
 

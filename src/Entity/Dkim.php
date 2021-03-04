@@ -113,8 +113,8 @@ class Dkim implements LoggableEntityInterface
     public function setDomain(Domain $domain): self
     {
         $this->domain = $domain;
+        $this->domain->setDkim($this);
 
         return $this;
     }
-
 }

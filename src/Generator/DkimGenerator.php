@@ -10,6 +10,12 @@ use Mailery\Storage\Service\StorageService;
 use Mailery\Storage\ValueObject\FileValueObject;
 use Mailery\Sender\Domain\Entity\Domain;
 use Mailery\Sender\Domain\Model\DomainDkimBucket;
+use Mailery\Sender\Domain\Service\DkimCrudService;
+use Mailery\Sender\Domain\ValueObject\DkimValueObject;
+use Mailery\Storage\Entity\File;
+use Mailery\Storage\Filesystem\FileInfo;
+use Symfony\Component\Mime\MimeTypes;
+use HttpSoft\Message\Stream;
 
 class DkimGenerator implements GeneratorInterface
 {
@@ -17,6 +23,16 @@ class DkimGenerator implements GeneratorInterface
      * @var string
      */
     private string $selector;
+
+    /**
+     * @var MimeTypes
+     */
+    private MimeTypes $mimeTypes;
+
+    /**
+     * @var FileInfo
+     */
+    private FileInfo $fileInfo;
 
     /**
      * @var DomainDkimBucket
@@ -29,18 +45,32 @@ class DkimGenerator implements GeneratorInterface
     private StorageService $storageService;
 
     /**
+     * @var DkimCrudService
+     */
+    private DkimCrudService $dkimCrudService;
+
+    /**
      * @param string $selector
+     * @param MimeTypes $mimeTypes
+     * @param FileInfo $fileInfo
      * @param DomainDkimBucket $bucket
      * @param StorageService $storageService
+     * @param DkimCrudService $dkimCrudService
      */
     public function __construct(
         string $selector,
+        MimeTypes $mimeTypes,
+        FileInfo $fileInfo,
         DomainDkimBucket $bucket,
-        StorageService $storageService
+        StorageService $storageService,
+        DkimCrudService $dkimCrudService
     ) {
         $this->selector = $selector;
+        $this->mimeTypes = $mimeTypes;
+        $this->fileInfo = $fileInfo;
         $this->bucket = $bucket;
         $this->storageService = $storageService;
+        $this->dkimCrudService = $dkimCrudService;
     }
 
     /**
@@ -65,11 +95,35 @@ class DkimGenerator implements GeneratorInterface
      */
     public function generate(Domain $domain): DnsRecord
     {
-        $privKeyFile = tmpfile();
-        $privKeyFilePath = stream_get_meta_data(tmpfile())['uri'];
+        [
+            'public' => $public,
+            'private' => $private,
+        ] = $this->createKeys();
 
-        $pubKeyFile = tmpfile();
-        $pubKeyFilePath = stream_get_meta_data(tmpfile())['uri'];
+        $dkim = $this->dkimCrudService->create(
+            (new DkimValueObject(
+                $this->createFile($domain, 'DKIM public key', $public),
+                $this->createFile($domain, 'DKIM private key', $private)
+            ))
+                ->withDomain($domain)
+        );
+
+        $publicKeyContent = $this->fileInfo
+            ->withFile($dkim->getPublic())
+            ->getStream()
+            ->getContents();
+
+        return new DnsRecord(
+            DnsRecordType::TXT,
+            sprintf('%s._domainkey.%s', $this->selector, $domain->getDomain()),
+            $this->preparePublicKey($publicKeyContent)
+        );
+    }
+
+    private function createKeys(): array
+    {
+        $publicKeyFile = new Stream(tmpfile());
+        $privateKeyFile = new Stream(tmpfile());
 
         //Create a 2048-bit RSA key with an SHA256 digest
         $pk = openssl_pkey_new([
@@ -78,21 +132,57 @@ class DkimGenerator implements GeneratorInterface
             'private_key_type' => OPENSSL_KEYTYPE_RSA,
         ]);
 
-        openssl_pkey_export_to_file($pk, $privKeyFilePath);
+        openssl_pkey_export_to_file($pk, $privateKeyFile->getMetadata('uri'));
         $pkDetails = openssl_pkey_get_details($pk);
-        file_put_contents($pubKeyFilePath, $pkDetails['key']);
+        file_put_contents($publicKeyFile->getMetadata('uri'), $pkDetails['key']);
 
-        $file = $this->storageService->create(
-            (new FileValueObject())
+        return [
+            'public' => $publicKeyFile,
+            'private' => $privateKeyFile,
+        ];
+    }
+
+    /**
+     * @param Domain $domain
+     * @param string $title
+     * @param Stream $stream
+     * @return File
+     */
+    private function createFile(Domain $domain, string $title, Stream $stream): File
+    {
+        $mimeTypes = $this->mimeTypes->getMimeTypes('pem');
+
+        return $this->storageService->create(
+            (new FileValueObject(
+                $title,
+                $mimeTypes[0] ?? 'text/plain',
+                $stream
+            ))
                 ->withBrand($domain->getBrand())
                 ->withBucket($this->bucket)
         );
-        var_dump($privKeyFilePath, $pubKeyFilePath);exit;
+    }
 
-        return new DnsRecord(
-            DnsRecordType::TXT,
-            sprintf('%s._domainkey.%s', $this->selector, $domain->getDomain()),
-            'v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCreWy3Di4fujHhYwopg+nOTEJ+6bG2hbtoIz7oP9EF6l1pzJg8CzdpFKUXMBTnKcgWML38z+XcXBRw5wjuv+eYcV0NfTMQfkmFyGE3GykTTmqwiWasTyUAoVXNlNmnfoK3nGfP5wOFU7+IT2LK+pY7ooz5tzJZiwZsOR6C0hgnzQIDAQAB'
-        );
+    /**
+     * @param string $content
+     * @return string
+     */
+    private function preparePublicKey(string $content): string
+    {
+        $dnsValue = '"v=DKIM1; h=sha256; t=s; p=" ';
+
+        //Remove PEM wrapper
+        $content = preg_replace('/^-+.*?-+$/m', '', $content);
+        //Strip line breaks
+        $content = str_replace(["\r", "\n"], '', $content);
+
+        //Strip and split the key into smaller parts and format for DNS
+        //Many DNS systems don't like long TXT entries
+        //but are OK if it's split into 255-char chunks
+        foreach (str_split($content, 253) as $part) {
+            $dnsValue .= '"' . trim($part) . '" ';
+        }
+
+        return trim($dnsValue);
     }
 }

@@ -16,8 +16,17 @@ use Mailery\Sender\Domain\Checker\DkimChecker;
 use Mailery\Sender\Domain\Checker\DmarcChecker;
 use Mailery\Sender\Domain\Checker\MxChecker;
 use Yiisoft\Factory\Definitions\Reference;
+use Symfony\Component\Mime\MimeTypes;
 
 return [
+    MimeTypes::class => [
+        '__construct()' => [
+            'map' => [
+                'application/x-pem-file' => ['pem'],
+            ],
+        ],
+    ],
+
     SpfGenerator::class => [
         '__construct()' => [
             'domainSpec' => $params['maileryio/mailery-sender-domain']['spf-domain-spec'],

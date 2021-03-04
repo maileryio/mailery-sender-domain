@@ -107,6 +107,7 @@ class DnsRecord implements RoutableEntityInterface, LoggableEntityInterface, IDn
     public function setDomain(Domain $domain): self
     {
         $this->domain = $domain;
+        $this->domain->getDnsRecords()->add($this);
 
         return $this;
     }
