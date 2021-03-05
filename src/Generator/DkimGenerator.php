@@ -16,6 +16,7 @@ use Mailery\Storage\Entity\File;
 use Mailery\Storage\Filesystem\FileInfo;
 use Symfony\Component\Mime\MimeTypes;
 use HttpSoft\Message\Stream;
+use Mailery\Sender\Domain\Model\DkimKeyPairs;
 
 class DkimGenerator implements GeneratorInterface
 {
@@ -95,15 +96,12 @@ class DkimGenerator implements GeneratorInterface
      */
     public function generate(Domain $domain): DnsRecord
     {
-        [
-            'public' => $public,
-            'private' => $private,
-        ] = $this->createKeys();
+        $keyPairs = (new DkimKeyPairs())->generate();
 
         $dkim = $this->dkimCrudService->create(
             (new DkimValueObject(
-                $this->createFile($domain, 'DKIM public key', $public),
-                $this->createFile($domain, 'DKIM private key', $private)
+                $this->createFile($domain, 'DKIM public key', $keyPairs->getPublic()),
+                $this->createFile($domain, 'DKIM private key', $keyPairs->getPrivate())
             ))
                 ->withDomain($domain)
         );
@@ -118,28 +116,6 @@ class DkimGenerator implements GeneratorInterface
             sprintf('%s._domainkey.%s', $this->selector, $domain->getDomain()),
             $this->preparePublicKey($publicKeyContent)
         );
-    }
-
-    private function createKeys(): array
-    {
-        $publicKeyFile = new Stream(tmpfile());
-        $privateKeyFile = new Stream(tmpfile());
-
-        //Create a 2048-bit RSA key with an SHA256 digest
-        $pk = openssl_pkey_new([
-            'digest_alg' => 'sha256',
-            'private_key_bits' => 2048,
-            'private_key_type' => OPENSSL_KEYTYPE_RSA,
-        ]);
-
-        openssl_pkey_export_to_file($pk, $privateKeyFile->getMetadata('uri'));
-        $pkDetails = openssl_pkey_get_details($pk);
-        file_put_contents($publicKeyFile->getMetadata('uri'), $pkDetails['key']);
-
-        return [
-            'public' => $publicKeyFile,
-            'private' => $privateKeyFile,
-        ];
     }
 
     /**

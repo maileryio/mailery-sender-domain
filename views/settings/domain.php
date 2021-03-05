@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use Mailery\Web\Widget\FlashMessage;
+use Mailery\Sender\Domain\Entity\DnsRecord;
 use Yiisoft\Form\Widget\Form;
 use Yiisoft\Html\Html;
 use Yiisoft\Yii\Widgets\ContentDecorator;
@@ -64,7 +65,16 @@ use Yiisoft\Yii\Widgets\ContentDecorator;
             <div class="mb-4"></div>
 
             <div class="accordion" role="tablist">
-                <?php foreach($domain->getDnsRecords() as $index => $dnsRecord) {
+                <?php
+                    $dnsRecords = $domain->getDnsRecords()->toArray();
+                    usort(
+                        $dnsRecords,
+                        function (DnsRecord $a, DnsRecord $b) {
+                            return $a->getId() > $b->getId();
+                        }
+                    );
+
+                    foreach($dnsRecords as $index => $dnsRecord) {
                     /** @var Mailery\Channel\Email\Entity\DnsRecord $dnsRecord */
                     ?><b-card no-body class="mb-1">
                         <b-card-header header-tag="header" class="p-1" role="tab">

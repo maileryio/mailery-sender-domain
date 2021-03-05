@@ -6,6 +6,7 @@ use Mailery\Sender\Domain\Checker\CheckerInterface;
 use Mesour\DnsChecker\DnsRecordSet;
 use Mesour\DnsChecker\DnsRecordType;
 use Mailery\Sender\Domain\Enum\DnsRecordSubType;
+use Mailery\Sender\Domain\Entity\DnsRecord;
 
 class MxChecker implements CheckerInterface
 {
@@ -26,15 +27,21 @@ class MxChecker implements CheckerInterface
     }
 
     /**
-     * @param string $domain
+     * @param DnsRecord $dnsRecord
      * @param DnsRecordSet $recordSet
      * @return bool
      */
-    public function check(string $domain, DnsRecordSet $recordSet): bool
+    public function check(DnsRecord $dnsRecord, DnsRecordSet $recordSet): bool
     {
+        if ($dnsRecord->getType() !== $this->getType()
+            || $dnsRecord->getSubType() !== $this->getSubType()
+        ) {
+            return false;
+        }
+
         foreach ($recordSet->getRecordsByType($this->getType()) as $record) {
             /** @var IDnsRecord $record */
-            if ($record->getName() === $domain) {
+            if ($record->getName() === $dnsRecord->getName()) {
                 return true;
             }
         }

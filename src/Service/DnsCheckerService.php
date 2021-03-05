@@ -58,7 +58,7 @@ class DnsCheckerService
                 ->filterBySubType($dnsRecord->getSubType())
                 ->first();
 
-            if ($checker && $checker->check($domain, $dnsRecordSet)) {
+            if ($checker && $checker->check($dnsRecord, $dnsRecordSet)) {
                 $dnsRecord->setStatus(DnsRecordEntity::STATUS_FOUND);
             } else {
                 $dnsRecord->setStatus(DnsRecordEntity::STATUS_NOT_FOUND);

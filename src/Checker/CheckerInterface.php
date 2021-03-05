@@ -3,6 +3,7 @@
 namespace Mailery\Sender\Domain\Checker;
 
 use Mesour\DnsChecker\DnsRecordSet;
+use Mailery\Sender\Domain\Entity\DnsRecord;
 
 interface CheckerInterface
 {
@@ -17,9 +18,9 @@ interface CheckerInterface
     public function getSubType():string;
 
     /**
-     * @param string $domain
+     * @param DnsRecord $dnsRecord
      * @param DnsRecordSet $recordSet
      * @return bool
      */
-    public function check(string $domain, DnsRecordSet $recordSet): bool;
+    public function check(DnsRecord $dnsRecord, DnsRecordSet $recordSet): bool;
 }

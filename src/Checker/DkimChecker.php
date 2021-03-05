@@ -7,20 +7,24 @@ use Mesour\DnsChecker\DnsRecordSet;
 use Mesour\DnsChecker\DnsRecordType;
 use Mailery\Sender\Domain\Enum\DnsRecordSubType;
 use Mesour\DnsChecker\IDnsRecord;
+use Mailery\Sender\Domain\Entity\DnsRecord;
+use Mailery\Sender\Domain\Model\DkimKeyPairs;
+use Mailery\Storage\Filesystem\FileInfo;
+use HttpSoft\Message\Stream;
 
 class DkimChecker implements CheckerInterface
 {
     /**
-     * @var string
+     * @var FileInfo
      */
-    private string $selector;
+    private FileInfo $fileInfo;
 
     /**
-     * @param string $selector
+     * @param FileInfo $fileInfo
      */
-    public function __construct(string $selector)
+    public function __construct(FileInfo $fileInfo)
     {
-        $this->selector = $selector;
+        $this->fileInfo = $fileInfo;
     }
 
     /**
@@ -40,21 +44,51 @@ class DkimChecker implements CheckerInterface
     }
 
     /**
-     * @param string $domain
+     * @param DnsRecord $dnsRecord
      * @param DnsRecordSet $recordSet
      * @return bool
      */
-    public function check(string $domain, DnsRecordSet $recordSet): bool
+    public function check(DnsRecord $dnsRecord, DnsRecordSet $recordSet): bool
     {
-        $name = sprintf('%s._domainkey.%s', $this->selector, $domain);
+        if ($dnsRecord->getType() !== $this->getType()
+            || $dnsRecord->getSubType() !== $this->getSubType()
+        ) {
+            return false;
+        }
 
         foreach ($recordSet->getRecordsByType($this->getType()) as $record) {
             /** @var IDnsRecord $record */
-            if ($record->getName() === $name) {
-                return true;
+            if ($record->getName() === $dnsRecord->getName()) {
+                $stream = fopen('php://memory','r+');
+                fwrite($stream, $this->preparePublicKey($record->getContent()));
+                rewind($stream);
+
+                $keyPairs = (new DkimKeyPairs())
+                    ->withPublic(new Stream($stream))
+                    ->withPrivate(
+                        $this->fileInfo
+                            ->withFile($dnsRecord->getDomain()->getDkim()->getPrivate())
+                            ->getStream()
+                    );
+
+                return $keyPairs->validate();
             }
         }
 
         return false;
+    }
+
+    /**
+     * @param string $content
+     * @return string
+     */
+    private function preparePublicKey(string $content): string
+    {
+        $content = str_replace(["\r", "\n", "\"", "'"], '', $content);
+
+        if (preg_match('/p=(.*)\b/', $content, $matches)) {
+            $content = str_replace(' ', '', $matches[1]);
+        }
+        return "-----BEGIN PUBLIC KEY-----\n{$content}\n-----END PUBLIC KEY-----";
     }
 }

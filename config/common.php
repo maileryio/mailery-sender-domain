@@ -17,8 +17,16 @@ use Mailery\Sender\Domain\Checker\DmarcChecker;
 use Mailery\Sender\Domain\Checker\MxChecker;
 use Yiisoft\Factory\Definitions\Reference;
 use Symfony\Component\Mime\MimeTypes;
+use Mailery\Sender\Domain\Model\DomainDkimBucket;
+use Mailery\Storage\Filesystem\FileStorageInterface;
 
 return [
+    DomainDkimBucket::class => [
+        '__construct()' => [
+            'filesystem' => Reference::to(FileStorageInterface::class),
+        ],
+    ],
+
     MimeTypes::class => [
         '__construct()' => [
             'map' => [
@@ -54,12 +62,6 @@ return [
     SpfChecker::class => [
         '__construct()' => [
             'domainSpec' => $params['maileryio/mailery-sender-domain']['spf-domain-spec'],
-        ],
-    ],
-
-    DkimChecker::class => [
-        '__construct()' => [
-            'selector' => $params['maileryio/mailery-sender-domain']['dkim-selector'],
         ],
     ],
 
