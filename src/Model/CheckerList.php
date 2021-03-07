@@ -8,14 +8,6 @@ use Mailery\Sender\Domain\Checker\CheckerInterface;
 class CheckerList extends ArrayCollection
 {
     /**
-     * @param CheckerInterface[] $checkers
-     */
-    public function __construct(array $checkers)
-    {
-        parent::__construct($checkers);
-    }
-
-    /**
      * @param string $subType
      * @return array
      */

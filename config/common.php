@@ -50,7 +50,7 @@ return [
 
     GeneratorList::class => [
         '__construct()' => [
-            'generators' => [
+            'elements' => [
                 Reference::to(SpfGenerator::class),
                 Reference::to(DkimGenerator::class),
                 Reference::to(DmarcGenerator::class),
@@ -67,7 +67,7 @@ return [
 
     CheckerList::class => [
         '__construct()' => [
-            'checkers' => [
+            'elements' => [
                 Reference::to(SpfChecker::class),
                 Reference::to(DkimChecker::class),
                 Reference::to(DmarcChecker::class),
