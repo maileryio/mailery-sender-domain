@@ -190,4 +190,18 @@ class Domain implements RoutableEntityInterface, LoggableEntityInterface
     {
         return ['brandId' => $this->getBrand()->getId()];
     }
+
+    /**
+     * @return bool
+     */
+    public function isVerified(): bool
+    {
+        if ($this->getDnsRecords()->isEmpty()) {
+            return false;
+        }
+
+        return $this->getDnsRecords()->filter(function (DnsRecord $dnsRecord) {
+            return !$dnsRecord->isFound();
+        })->isEmpty();
+    }
 }
