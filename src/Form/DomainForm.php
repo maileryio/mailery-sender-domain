@@ -31,7 +31,7 @@ class DomainForm extends FormModel
     /**
      * @return array
      */
-    public function attributeLabels(): array
+    public function getAttributeLabels(): array
     {
         return [
             'domain' => 'Domain',
