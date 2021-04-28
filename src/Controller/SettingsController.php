@@ -93,7 +93,7 @@ class SettingsController
             $form = $form->withDomain($domain);
         }
 
-        if (($request->getMethod() === Method::POST) && $form->load($body) && $validator->validate($form, $form->getRules())) {
+        if (($request->getMethod() === Method::POST) && $form->load($body) && $validator->validate($form)) {
             $valueObject = DomainValueObject::fromForm($form)
                 ->withBrand($this->brandLocator->getBrand());
 
