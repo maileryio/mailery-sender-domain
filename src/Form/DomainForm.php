@@ -20,7 +20,7 @@ class DomainForm extends FormModel
      * @param Domain $domain
      * @return self
      */
-    public function withDomain(Domain $domain): self
+    public function withEntity(Domain $domain): self
     {
         $new = clone $this;
         $new->domain = $domain->getDomain();
@@ -41,19 +41,11 @@ class DomainForm extends FormModel
     /**
      * @return array
      */
-    public function attributeHints(): array
+    public function getAttributeHints(): array
     {
         return [
             'domain' => 'Add a sending domain you wish to validate (yourcompany.com for example). A few simple DNS configurations are required in order for your emails to be sent directly from your domain.',
         ];
-    }
-
-    /**
-     * @return string
-     */
-    public function formName(): string
-    {
-        return 'DomainForm';
     }
 
     /**

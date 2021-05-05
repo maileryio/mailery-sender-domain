@@ -160,23 +160,23 @@ class Domain implements RoutableEntityInterface, LoggableEntityInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
-    public function getEditRouteName(): ?string
+    public function getIndexRouteName(): ?string
     {
         return '/brand/settings/domain';
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
-    public function getEditRouteParams(): array
+    public function getIndexRouteParams(): array
     {
-        return ['brandId' => $this->getBrand()->getId()];
+        return ['brandId' => $this->getDomain()->getBrand()->getId()];
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getViewRouteName(): ?string
     {
@@ -184,11 +184,43 @@ class Domain implements RoutableEntityInterface, LoggableEntityInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getViewRouteParams(): array
     {
         return ['brandId' => $this->getBrand()->getId()];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getEditRouteName(): ?string
+    {
+        return '/brand/settings/domain';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getEditRouteParams(): array
+    {
+        return ['brandId' => $this->getBrand()->getId()];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDeleteRouteName(): ?string
+    {
+        throw new \RuntimeException('Not implemented');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDeleteRouteParams(): array
+    {
+        throw new \RuntimeException('Not implemented');
     }
 
     /**

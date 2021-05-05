@@ -90,7 +90,7 @@ class SettingsController
         $body = $request->getParsedBody();
 
         if (($domain = $this->getDomain()) !== null) {
-            $form = $form->withDomain($domain);
+            $form = $form->withEntity($domain);
         }
 
         if (($request->getMethod() === Method::POST) && $form->load($body) && $validator->validate($form)) {
