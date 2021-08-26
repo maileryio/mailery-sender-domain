@@ -70,7 +70,7 @@ use Yiisoft\Yii\Widgets\ContentDecorator;
                     usort(
                         $dnsRecords,
                         function (DnsRecord $a, DnsRecord $b) {
-                            return $a->getId() > $b->getId();
+                            return $a->getId() < $b->getId() ? -1 : 1;
                         }
                     );
 

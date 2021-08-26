@@ -55,8 +55,8 @@ class DomainForm extends FormModel
     {
         return [
             'domain' => [
-                new HasLengthHtmlOptions((new HasLength())->max(255)),
-                new Callback(static function ($value) {
+                new HasLengthHtmlOptions(HasLength::rule()->max(255)),
+                Callback::rule(static function ($value) {
                     $result = new Result();
 
                     if (empty($value)) {

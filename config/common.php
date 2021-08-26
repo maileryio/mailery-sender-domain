@@ -15,7 +15,7 @@ use Mailery\Sender\Domain\Checker\SpfChecker;
 use Mailery\Sender\Domain\Checker\DkimChecker;
 use Mailery\Sender\Domain\Checker\DmarcChecker;
 use Mailery\Sender\Domain\Checker\MxChecker;
-use Yiisoft\Factory\Definitions\Reference;
+use Yiisoft\Factory\Definition\Reference;
 use Symfony\Component\Mime\MimeTypes;
 use Mailery\Sender\Domain\Model\DomainDkimBucket;
 use Mailery\Storage\Filesystem\FileStorageInterface;

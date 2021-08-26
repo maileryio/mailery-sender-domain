@@ -2,7 +2,7 @@
 
 use Mailery\Sender\Domain\Model\DomainDkimBucket;
 use Yiisoft\Router\UrlGeneratorInterface;
-use Yiisoft\Factory\Definitions\Reference;
+use Yiisoft\Factory\Definition\Reference;
 
 return [
     'yiisoft/yii-cycle' => [
