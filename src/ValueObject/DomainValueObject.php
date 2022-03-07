@@ -24,7 +24,7 @@ class DomainValueObject
     public static function fromForm(DomainForm $form): self
     {
         $new = new self();
-        $new->domain = $form->getAttributeValue('domain');
+        $new->domain = $form->getDomain();
 
         return $new;
     }

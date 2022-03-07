@@ -29,6 +29,14 @@ class DomainForm extends FormModel
     }
 
     /**
+     * @return string|null
+     */
+    public function getDomain(): ?string
+    {
+        return $this->domain;
+    }
+
+    /**
      * @return array
      */
     public function getAttributeLabels(): array
@@ -55,7 +63,7 @@ class DomainForm extends FormModel
     {
         return [
             'domain' => [
-                new HasLengthHtmlOptions(HasLength::rule()->max(255)),
+                new HasLengthHtmlOptions(HasLength::rule()->min(3)->max(255)),
                 Callback::rule(static function ($value) {
                     $result = new Result();
 
