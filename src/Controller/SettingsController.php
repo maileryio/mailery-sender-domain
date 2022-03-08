@@ -127,7 +127,7 @@ class SettingsController
     public function checkDns(DnsCheckerService $dnsChecker): Response
     {
         if (($domain = $this->getDomain()) === null) {
-            return $this->responseFactory->createResponse(404);
+            return $this->responseFactory->createResponse(Status::NOT_FOUND);
         }
 
         $dnsChecker->checkAll($domain->getDomain(), $domain->getDnsRecords());
