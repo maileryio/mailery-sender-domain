@@ -15,17 +15,11 @@ use HttpSoft\Message\Stream;
 class DkimChecker implements CheckerInterface
 {
     /**
-     * @var FileInfo
-     */
-    private FileInfo $fileInfo;
-
-    /**
      * @param FileInfo $fileInfo
      */
-    public function __construct(FileInfo $fileInfo)
-    {
-        $this->fileInfo = $fileInfo;
-    }
+    public function __construct(
+        private FileInfo $fileInfo
+    ) {}
 
     /**
      * @return string

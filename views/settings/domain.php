@@ -9,7 +9,7 @@ use Yiisoft\Yii\Widgets\ContentDecorator;
 /** @var Yiisoft\Yii\WebView $this */
 /** @var Psr\Http\Message\ServerRequestInterface $request */
 /** @var Mailery\Brand\Entity\Brand $brand */
-/** @var Mailery\Sender\Domain\Form\SettingsForm $form */
+/** @var Yiisoft\Form\FormModelInterface $form */
 /** @var Mailery\Sender\Domain\Entity\Domain $domain */
 /** @var string $csrf */
 ?>

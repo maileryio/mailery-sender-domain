@@ -9,47 +9,54 @@ use Mailery\Common\Entity\RoutableEntityInterface;
 use Mailery\Sender\Domain\Entity\Dkim;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Mailery\Sender\Domain\Repository\DomainRepository;
+use Mailery\Activity\Log\Mapper\LoggableMapper;
+use Cycle\ORM\Entity\Behavior;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Relation\BelongsTo;
+use Cycle\Annotated\Annotation\Relation\HasMany;
+use Mailery\Sender\Domain\Entity\DnsRecord;
+use Cycle\ORM\Collection\DoctrineCollectionFactory;
+use Cycle\Annotated\Annotation\Relation\HasOne;
 
-/**
- * @Cycle\Annotated\Annotation\Entity(
- *      table = "domains",
- *      repository = "Mailery\Sender\Domain\Repository\DomainRepository",
- *      mapper = "Mailery\Sender\Domain\Mapper\DefaultMapper"
- * )
- */
+#[Entity(
+    table: 'domains',
+    repository: DomainRepository::class,
+    mapper: LoggableMapper::class
+)]
+#[Behavior\CreatedAt(
+    field: 'createdAt',
+    column: 'created_at'
+)]
+#[Behavior\UpdatedAt(
+    field: 'updatedAt',
+    column: 'updated_at'
+)]
 class Domain implements RoutableEntityInterface, LoggableEntityInterface
 {
     use LoggableEntityTrait;
 
-    /**
-     * @Cycle\Annotated\Annotation\Column(type = "primary")
-     * @var int|null
-     */
-    private $id;
+    #[Column(type: 'primary')]
+    private int $id;
 
-    /**
-     * @Cycle\Annotated\Annotation\Relation\BelongsTo(target = "Mailery\Brand\Entity\Brand", nullable = false)
-     * @var Brand
-     */
-    private $brand;
+    #[BelongsTo(target: Brand::class)]
+    private Brand $brand;
 
-    /**
-     * @Cycle\Annotated\Annotation\Column(type = "string(255)")
-     * @var string
-     */
-    private $domain;
+    #[Column(type: 'string(255)')]
+    private string $domain;
 
-    /**
-     * @Cycle\Annotated\Annotation\Relation\HasMany(target = "Mailery\Sender\Domain\Entity\DnsRecord")
-     * @var Collection
-     */
-    private $dnsRecords;
+    #[HasMany(target: DnsRecord::class, collection: DoctrineCollectionFactory::class)]
+    private ArrayCollection $dnsRecords;
 
-    /**
-     * @Cycle\Annotated\Annotation\Relation\HasOne(target = "Mailery\Sender\Domain\Entity\Dkim", nullable = false)
-     * @var Dkim
-     */
-    private $dkim;
+    #[HasOne(target: Dkim::class)]
+    private Dkim $dkim;
+
+    #[Column(type: 'datetime')]
+    private \DateTimeImmutable $createdAt;
+
+    #[Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     public function __construct()
     {

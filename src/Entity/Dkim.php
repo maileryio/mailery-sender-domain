@@ -6,40 +6,45 @@ use Mailery\Storage\Entity\File;
 use Mailery\Activity\Log\Entity\LoggableEntityInterface;
 use Mailery\Activity\Log\Entity\LoggableEntityTrait;
 use Mailery\Sender\Domain\Entity\Domain;
+use Mailery\Activity\Log\Mapper\LoggableMapper;
+use Cycle\ORM\Entity\Behavior;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\Annotated\Annotation\Column;
+use Cycle\Annotated\Annotation\Relation\BelongsTo;
 
-/**
- * @Cycle\Annotated\Annotation\Entity(
- *      table = "domain_dkim",
- *      mapper = "Mailery\Sender\Domain\Mapper\DefaultMapper"
- * )
- */
+#[Entity(
+    table: 'domain_dkim',
+    mapper: LoggableMapper::class
+)]
+#[Behavior\CreatedAt(
+    field: 'createdAt',
+    column: 'created_at'
+)]
+#[Behavior\UpdatedAt(
+    field: 'updatedAt',
+    column: 'updated_at'
+)]
 class Dkim implements LoggableEntityInterface
 {
     use LoggableEntityTrait;
 
-    /**
-     * @Cycle\Annotated\Annotation\Column(type = "primary")
-     * @var int|null
-     */
-    private $id;
+    #[Column(type: 'primary')]
+    private int $id;
 
-    /**
-     * @Cycle\Annotated\Annotation\Relation\BelongsTo(target = "Mailery\Storage\Entity\File", nullable = true)
-     * @var File
-     */
-    private $public;
+    #[BelongsTo(target: File::class, nullable: true)]
+    private ?File $public = null;
 
-    /**
-     * @Cycle\Annotated\Annotation\Relation\BelongsTo(target = "Mailery\Storage\Entity\File", nullable = true)
-     * @var File
-     */
-    private $private;
+    #[BelongsTo(target: File::class, nullable: true)]
+    private ?File $private = null;
 
-    /**
-     * @Cycle\Annotated\Annotation\Relation\BelongsTo(target = "Mailery\Sender\Domain\Entity\Domain", nullable = false)
-     * @var Domain
-     */
-    private $domain;
+    #[BelongsTo(target: Domain::class)]
+    private Domain $domain;
+
+    #[Column(type: 'datetime')]
+    private \DateTimeImmutable $createdAt;
+
+    #[Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     /**
      * @return int

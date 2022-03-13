@@ -8,14 +8,26 @@ use Mailery\Sender\Domain\Entity\Domain;
 use Mailery\Common\Entity\RoutableEntityInterface;
 use Mesour\DnsChecker\DnsRecordType;
 use Mesour\DnsChecker\IDnsRecord;
+use Mailery\Sender\Domain\Repository\DnsRecordRepository;
+use Mailery\Activity\Log\Mapper\LoggableMapper;
+use Cycle\Annotated\Annotation\Relation\BelongsTo;
+use Cycle\ORM\Entity\Behavior;
+use Cycle\Annotated\Annotation\Entity;
+use Cycle\Annotated\Annotation\Column;
 
-/**
- * @Cycle\Annotated\Annotation\Entity(
- *      table = "domain_dns_records",
- *      repository = "Mailery\Sender\Domain\Repository\DnsRecordRepository",
- *      mapper = "Mailery\Sender\Domain\Mapper\DefaultMapper"
- * )
- */
+#[Entity(
+    table: 'domain_dns_records',
+    repository: DnsRecordRepository::class,
+    mapper: LoggableMapper::class
+)]
+#[Behavior\CreatedAt(
+    field: 'createdAt',
+    column: 'created_at'
+)]
+#[Behavior\UpdatedAt(
+    field: 'updatedAt',
+    column: 'updated_at'
+)]
 class DnsRecord implements RoutableEntityInterface, LoggableEntityInterface, IDnsRecord
 {
     use LoggableEntityTrait;
@@ -24,46 +36,32 @@ class DnsRecord implements RoutableEntityInterface, LoggableEntityInterface, IDn
     const STATUS_FOUND = 'found';
     const STATUS_NOT_FOUND = 'not_found';
 
-    /**
-     * @Cycle\Annotated\Annotation\Column(type = "primary")
-     * @var int|null
-     */
-    private $id;
+    #[Column(type: 'primary')]
+    private int $id;
 
-    /**
-     * @Cycle\Annotated\Annotation\Relation\BelongsTo(target = "Mailery\Sender\Domain\Entity\Domain", nullable = false)
-     * @var Domain
-     */
-    private $domain;
+    #[BelongsTo(target: Domain::class)]
+    private Domain $domain;
 
-    /**
-     * @Cycle\Annotated\Annotation\Column(type = "string(255)")
-     * @var string
-     */
-    private $type;
+    #[Column(type: 'string(255)')]
+    private string $type;
 
-    /**
-     * @Cycle\Annotated\Annotation\Column(type = "string(255)")
-     * @var string
-     */
-    private $subType;
+    #[Column(type: 'string(255)')]
+    private string $subType;
 
-    /**
-     * @Cycle\Annotated\Annotation\Column(type = "string(255)")
-     * @var string
-     */
-    private $name;
+    #[Column(type: 'string(255)')]
+    private string $name;
 
-    /**
-     * @Cycle\Annotated\Annotation\Column(type = "text")
-     * @var string
-     */
-    private $content;
+    #[Column(type: 'text')]
+    private string $content;
 
-    /**
-     * @Cycle\Annotated\Annotation\Column(type = "enum(pending, found, not_found)")
-     */
-    private $status;
+    #[Column(type: 'enum(pending, found, not_found)')]
+    private string $status;
+
+    #[Column(type: 'datetime')]
+    private \DateTimeImmutable $createdAt;
+
+    #[Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     /**
      * @return string

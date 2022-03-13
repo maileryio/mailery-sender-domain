@@ -3,11 +3,25 @@
 use Mailery\Sender\Domain\Model\DomainDkimBucket;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Definitions\Reference;
-
+use Mailery\Sender\Domain\Entity\Dkim;
+use Mailery\Sender\Domain\Entity\DnsRecord;
+use Mailery\Sender\Domain\Entity\Domain;
 return [
     'yiisoft/yii-cycle' => [
         'entity-paths' => [
             '@vendor/maileryio/mailery-sender-domain/src/Entity',
+        ],
+    ],
+
+    'maileryio/mailery-activity-log' => [
+        'entity-groups' => [
+            'sender' => [
+                'entities' => [
+                    Dkim::class,
+                    DnsRecord::class,
+                    Domain::class,
+                ],
+            ],
         ],
     ],
 

@@ -14,17 +14,11 @@ use SPFLib\Term\Mechanism\IncludeMechanism;
 class SpfChecker implements CheckerInterface
 {
     /**
-     * @var string
-     */
-    private string $domainSpec;
-
-    /**
      * @param string $domainSpec
      */
-    public function __construct(string $domainSpec)
-    {
-        $this->domainSpec = $domainSpec;
-    }
+    public function __construct(
+        private string $domainSpec
+    ) {}
 
     /**
      * @return string

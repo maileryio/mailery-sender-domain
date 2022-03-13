@@ -10,29 +10,34 @@ use Mailery\Sender\Domain\ValueObject\DomainValueObject;
 use Mailery\Sender\Domain\Model\GeneratorList;
 use Mailery\Sender\Domain\Generator\GeneratorInterface;
 use Yiisoft\Yii\Cycle\Data\Writer\EntityWriter;
+use Mailery\Brand\Entity\Brand;
 
 class DomainCrudService
 {
     /**
-     * @var ORMInterface
+     * @var Brand
      */
-    private ORMInterface $orm;
-
-    /**
-     * @var GeneratorList
-     */
-    private GeneratorList $generatorList;
+    private Brand $brand;
 
     /**
      * @param ORMInterface $orm
      * @param GeneratorList $generatorList
      */
     public function __construct(
-        ORMInterface $orm,
-        GeneratorList $generatorList
-    ) {
-        $this->orm = $orm;
-        $this->generatorList = $generatorList;
+        private ORMInterface $orm,
+        private GeneratorList $generatorList
+    ) {}
+
+    /**
+     * @param Brand $brand
+     * @return self
+     */
+    public function withBrand(Brand $brand): self
+    {
+        $new = clone $this;
+        $new->brand = $brand;
+
+        return $new;
     }
 
     /**
@@ -43,7 +48,7 @@ class DomainCrudService
     {
         $domain = (new Domain())
             ->setDomain($valueObject->getDomain())
-            ->setBrand($valueObject->getBrand())
+            ->setBrand($this->brand)
         ;
 
         $this->buildDnsRecords($domain);
