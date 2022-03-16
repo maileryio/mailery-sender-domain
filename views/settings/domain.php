@@ -11,7 +11,7 @@ use Yiisoft\Yii\Widgets\ContentDecorator;
 /** @var Mailery\Brand\Entity\Brand $brand */
 /** @var Yiisoft\Form\FormModelInterface $form */
 /** @var Mailery\Sender\Domain\Entity\Domain $domain */
-/** @var string $csrf */
+/** @var Yiisoft\Yii\View\Csrf $csrf */
 ?>
 
 <?= ContentDecorator::widget()
