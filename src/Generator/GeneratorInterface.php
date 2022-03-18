@@ -4,18 +4,20 @@ namespace Mailery\Sender\Domain\Generator;
 
 use Mesour\DnsChecker\DnsRecord;
 use Mailery\Sender\Domain\Entity\Domain;
+use Mailery\Sender\Domain\Enum\DnsRecordType;
+use Mailery\Sender\Domain\Enum\DnsRecordSubType;
 
 interface GeneratorInterface
 {
     /**
-     * @return string
+     * @return DnsRecordType
      */
-    public function getType():string;
+    public function getType(): DnsRecordType;
 
     /**
-     * @return string
+     * @return DnsRecordSubType
      */
-    public function getSubType():string;
+    public function getSubType(): DnsRecordSubType;
 
     /**
      * @param Domain $domain

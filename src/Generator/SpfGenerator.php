@@ -10,7 +10,7 @@ use SPFLib\Term\Mechanism\AllMechanism;
 use SPFLib\Term\Mechanism\MxMechanism;
 use SPFLib\Term\Mechanism\IncludeMechanism;
 use Mesour\DnsChecker\DnsRecord;
-use Mesour\DnsChecker\DnsRecordType;
+use Mailery\Sender\Domain\Enum\DnsRecordType;
 use Mailery\Sender\Domain\Enum\DnsRecordSubType;
 use Mailery\Sender\Domain\Generator\GeneratorInterface;
 use Mailery\Sender\Domain\Entity\Domain;
@@ -18,39 +18,28 @@ use Mailery\Sender\Domain\Entity\Domain;
 class SpfGenerator implements GeneratorInterface
 {
     /**
-     * @var string
-     */
-    private string $domainSpec;
-
-    /**
-     * @var Resolver
-     */
-    private Resolver $dnsResolver;
-
-    /**
      * @param string $domainSpec
      * @param Resolver $dnsResolver
      */
-    public function __construct(string $domainSpec, Resolver $dnsResolver)
+    public function __construct(
+        private string $domainSpec,
+        private Resolver $dnsResolver
+    ) {}
+
+    /**
+     * @return DnsRecordType
+     */
+    public function getType(): DnsRecordType
     {
-        $this->domainSpec = $domainSpec;
-        $this->dnsResolver = $dnsResolver;
+        return DnsRecordType::asTxt();
     }
 
     /**
-     * @return string
+     * @return DnsRecordSubType
      */
-    public function getType():string
+    public function getSubType(): DnsRecordSubType
     {
-        return DnsRecordType::TXT;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSubType():string
-    {
-        return DnsRecordSubType::SPF;
+        return DnsRecordSubType::asSpf();
     }
 
     /**
@@ -74,7 +63,7 @@ class SpfGenerator implements GeneratorInterface
         }
 
         return new DnsRecord(
-            DnsRecordType::TXT,
+            $this->getType()->getValue(),
             $domain->getDomain(),
             (string) $this->applyTerms(new Record(), $terms)
         );

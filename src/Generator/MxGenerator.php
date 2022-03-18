@@ -3,7 +3,7 @@
 namespace Mailery\Sender\Domain\Generator;
 
 use Mesour\DnsChecker\DnsRecord;
-use Mesour\DnsChecker\DnsRecordType;
+use Mailery\Sender\Domain\Enum\DnsRecordType;
 use Mailery\Sender\Domain\Enum\DnsRecordSubType;
 use Mailery\Sender\Domain\Generator\GeneratorInterface;
 use Mailery\Sender\Domain\Entity\Domain;
@@ -11,19 +11,19 @@ use Mailery\Sender\Domain\Entity\Domain;
 class MxGenerator implements GeneratorInterface
 {
     /**
-     * @return string
+     * @return DnsRecordType
      */
-    public function getType():string
+    public function getType(): DnsRecordType
     {
-        return DnsRecordType::MX;
+        return DnsRecordType::asMx();
     }
 
     /**
-     * @return string
+     * @return DnsRecordSubType
      */
-    public function getSubType():string
+    public function getSubType(): DnsRecordSubType
     {
-        return DnsRecordSubType::MX;
+        return DnsRecordSubType::asMx();
     }
 
     /**
@@ -32,6 +32,10 @@ class MxGenerator implements GeneratorInterface
      */
     public function generate(Domain $domain): DnsRecord
     {
-        return new DnsRecord(DnsRecordType::MX, $domain->getDomain(), '');
+        return new DnsRecord(
+            $this->getType()->getValue(),
+            $domain->getDomain(),
+            ''
+        );
     }
 }

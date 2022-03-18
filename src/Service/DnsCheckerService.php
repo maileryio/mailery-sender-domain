@@ -2,7 +2,8 @@
 
 namespace Mailery\Sender\Domain\Service;
 
-use Mailery\Sender\Domain\Entity\DnsRecord as DnsRecordEntity;
+use Mailery\Sender\Domain\Entity\DnsRecord;
+use Mailery\Sender\Domain\Enum\DnsRecordStatus;
 use Mesour\DnsChecker\DnsChecker;
 use Mesour\DnsChecker\DnsRecordRequest;
 use Mesour\DnsChecker\DnsRecordType;
@@ -37,14 +38,14 @@ class DnsCheckerService
 
     /**
      * @param string $domain
-     * @param DnsRecordEntity[] $dnsRecords
+     * @param DnsRecord[] $dnsRecords
      */
     public function checkAll(string $domain, iterable $dnsRecords)
     {
         $request = new DnsRecordRequest();
 
         foreach ($dnsRecords as $dnsRecord) {
-            $request->addFilter($dnsRecord->getName(), DnsRecordType::getPhpValue($dnsRecord->getType()));
+            $request->addFilter($dnsRecord->getName(), DnsRecordType::getPhpValue($dnsRecord->getType()->getValue()));
         }
 
         $provider = new DnsRecordProvider();
@@ -59,9 +60,9 @@ class DnsCheckerService
                 ->first();
 
             if ($checker && $checker->check($dnsRecord, $dnsRecordSet)) {
-                $dnsRecord->setStatus(DnsRecordEntity::STATUS_FOUND);
+                $dnsRecord->setStatus(DnsRecordStatus::asFound());
             } else {
-                $dnsRecord->setStatus(DnsRecordEntity::STATUS_NOT_FOUND);
+                $dnsRecord->setStatus(DnsRecordStatus::asNotFound());
             }
         }
 

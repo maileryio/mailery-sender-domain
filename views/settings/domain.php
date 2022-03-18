@@ -28,27 +28,20 @@ use Yiisoft\Yii\Widgets\ContentDecorator;
 <div class="row">
     <div class="col-12 col-xl-4">
         <?= Form::widget()
-            ->action($urlGenerator->generate('/brand/settings/domain'))
-            ->options(
-                [
-                    'id' => 'form-brand',
-                    'csrf' => $csrf,
-                    'enctype' => 'multipart/form-data',
-                ]
-            )
-            ->begin(); ?>
+                ->action($urlGenerator->generate('/brand/settings/domain'))
+                ->csrf($csrf)
+                ->id('sender-domain-form')
+                ->begin(); ?>
 
         <h3 class="h6">Sending domain</h3>
         <div class="mb-4"></div>
 
-        <?= $field->config($form, 'domain'); ?>
+        <?= $field->text($form, 'domain')
+                ->autofocus(); ?>
 
-        <?= Html::submitButton(
-            'Save',
-            [
-                'class' => 'btn btn-primary float-right mt-2'
-            ]
-        ); ?>
+        <?= $field->submitButton()
+                ->class('btn btn-primary float-right mt-2')
+                ->value('Save'); ?>
 
         <?= Form::end(); ?>
     </div>
@@ -75,21 +68,13 @@ use Yiisoft\Yii\Widgets\ContentDecorator;
                     );
 
                     foreach($dnsRecords as $index => $dnsRecord) {
-                    /** @var Mailery\Channel\Email\Entity\DnsRecord $dnsRecord */
+                    /** @var DnsRecord $dnsRecord */
                     ?><b-card no-body class="mb-1">
                         <b-card-header header-tag="header" class="p-1" role="tab">
                             <b-button v-b-toggle.check-dns-<?= $index ?>>
-                                <?= $dnsRecord->getSubtype() ?>
+                                <?= $dnsRecord->getSubType()->getLabel() ?>
                             </b-button>
-                             <?php if ($dnsRecord->isPending()) {
-                                echo '<span class="ml-2 badge badge-warning">pending</span>';
-                            } else if ($dnsRecord->isFound()) {
-                                echo '<span class="ml-2 badge badge-success">found</span>';
-                            } else if ($dnsRecord->isNotFound()) {
-                                echo '<span class="ml-2 badge badge-danger">not found</span>';
-                            } else {
-                                echo '<span class="ml-2 badge badge-secondary">unknown</span>';
-                            } ?>
+                            <?= '<span class="ml-2 badge ' . $dnsRecord->getStatus()->getCssClass() . '">' . $dnsRecord->getStatus()->getLabel() . '</span>'; ?>
                         </b-card-header>
                         <b-collapse id="check-dns-<?= $index ?>" accordion="check-dns" role="tabpanel">
                             <b-card-body>
@@ -102,7 +87,7 @@ use Yiisoft\Yii\Widgets\ContentDecorator;
                                     <div class="p-1">Name</div>
                                     <div class="bg-light border p-2"><?= $dnsRecord->getName() ?></div>
 
-                                    <?php if (!$dnsRecord->isMx()) { ?>
+                                    <?php if (!$dnsRecord->getType()->isMx()) { ?>
                                         <div class="p-2"></div>
 
                                         <div class="p-1">Content</div>
@@ -117,21 +102,13 @@ use Yiisoft\Yii\Widgets\ContentDecorator;
 
             <?= Form::widget()
                 ->action($urlGenerator->generate('/brand/settings/check-dns'))
-                ->options(
-                    [
-                        'id' => 'form-brand',
-                        'csrf' => $csrf,
-                        'enctype' => 'multipart/form-data',
-                    ]
-                )
+                ->csrf($csrf)
+                ->id('sender-domain-check-dns-form')
                 ->begin(); ?>
 
-            <?= Html::submitButton(
-                'Check DNS records',
-                [
-                    'class' => 'btn btn-primary float-right mt-2'
-                ]
-            ); ?>
+            <?= $field->submitButton()
+                ->class('btn btn-primary float-right mt-2')
+                ->value('Check DNS records'); ?>
 
             <?= Form::end(); ?>
         </div>

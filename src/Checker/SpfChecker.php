@@ -4,7 +4,7 @@ namespace Mailery\Sender\Domain\Checker;
 
 use Mailery\Sender\Domain\Checker\CheckerInterface;
 use Mesour\DnsChecker\DnsRecordSet;
-use Mesour\DnsChecker\DnsRecordType;
+use Mailery\Sender\Domain\Enum\DnsRecordType;
 use Mesour\DnsChecker\IDnsRecord;
 use Mailery\Sender\Domain\Entity\DnsRecord;
 use Mailery\Sender\Domain\Enum\DnsRecordSubType;
@@ -21,19 +21,19 @@ class SpfChecker implements CheckerInterface
     ) {}
 
     /**
-     * @return string
+     * @return DnsRecordType
      */
-    public function getType():string
+    public function getType(): DnsRecordType
     {
-        return DnsRecordType::TXT;
+        return DnsRecordType::asTxt();
     }
 
     /**
-     * @return string
+     * @return DnsRecordSubType
      */
-    public function getSubType():string
+    public function getSubType(): DnsRecordSubType
     {
-        return DnsRecordSubType::SPF;
+        return DnsRecordSubType::asSpf();
     }
 
     /**
@@ -43,8 +43,8 @@ class SpfChecker implements CheckerInterface
      */
     public function check(DnsRecord $dnsRecord, DnsRecordSet $recordSet): bool
     {
-        if ($dnsRecord->getType() !== $this->getType()
-            || $dnsRecord->getSubType() !== $this->getSubType()
+        if (!$dnsRecord->getType()->isSame($this->getType())
+            || $dnsRecord->getSubType()->isSame($this->getSubType())
         ) {
             return false;
         }

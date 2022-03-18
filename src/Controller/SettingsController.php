@@ -68,7 +68,7 @@ class SettingsController
                     $this->domainCrudService->delete($domain);
                     $domain = null;
                 } else {
-                    $this->domainCrudService->update($domain, $valueObject);
+                    $domain = $this->domainCrudService->update($domain, $valueObject);
                 }
             } else {
                 $domain = $this->domainCrudService->create($valueObject);

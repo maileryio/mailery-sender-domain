@@ -2,12 +2,10 @@
 
 namespace Mailery\Sender\Domain\Enum;
 
-class DnsRecordSubType
+class DnsRecordType
 {
-    private const SPF = 'SPF';
+    private const TXT = 'TXT';
     private const MX = 'MX';
-    private const DKIM = 'DKIM';
-    private const DMARC = 'DMARC';
 
     /**
      * @param string $value
@@ -36,9 +34,9 @@ class DnsRecordSubType
     /**
      * @return self
      */
-    public static function asSpf(): self
+    public static function asTxt(): self
     {
-        return new self(self::SPF);
+        return new self(self::TXT);
     }
 
     /**
@@ -47,22 +45,6 @@ class DnsRecordSubType
     public static function asMx(): self
     {
         return new self(self::MX);
-    }
-
-    /**
-     * @return self
-     */
-    public static function asDkim(): self
-    {
-        return new self(self::DKIM);
-    }
-
-    /**
-     * @return self
-     */
-    public static function asDmarc(): self
-    {
-        return new self(self::DMARC);
     }
 
     /**
@@ -82,11 +64,19 @@ class DnsRecordSubType
     }
 
     /**
-     * @param DnsRecordSubType $subType
      * @return bool
      */
-    public function isSame(DnsRecordSubType $subType): bool
+    public function isMx(): bool
     {
-        return $this->getValue() === $subType->getValue();
+        return $this->getValue() === self::MX;
+    }
+
+    /**
+     * @param DnsRecordType $type
+     * @return bool
+     */
+    public function isSame(DnsRecordType $type): bool
+    {
+        return $this->getValue() === $type->getValue();
     }
 }

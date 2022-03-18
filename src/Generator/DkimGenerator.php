@@ -3,7 +3,7 @@
 namespace Mailery\Sender\Domain\Generator;
 
 use Mesour\DnsChecker\DnsRecord;
-use Mesour\DnsChecker\DnsRecordType;
+use Mailery\Sender\Domain\Enum\DnsRecordType;
 use Mailery\Sender\Domain\Enum\DnsRecordSubType;
 use Mailery\Sender\Domain\Generator\GeneratorInterface;
 use Mailery\Storage\Service\StorageService;
@@ -21,36 +21,6 @@ use Mailery\Sender\Domain\Model\DkimKeyPairs;
 class DkimGenerator implements GeneratorInterface
 {
     /**
-     * @var string
-     */
-    private string $selector;
-
-    /**
-     * @var MimeTypes
-     */
-    private MimeTypes $mimeTypes;
-
-    /**
-     * @var FileInfo
-     */
-    private FileInfo $fileInfo;
-
-    /**
-     * @var DomainDkimBucket
-     */
-    private DomainDkimBucket $bucket;
-
-    /**
-     * @var StorageService
-     */
-    private StorageService $storageService;
-
-    /**
-     * @var DkimCrudService
-     */
-    private DkimCrudService $dkimCrudService;
-
-    /**
      * @param string $selector
      * @param MimeTypes $mimeTypes
      * @param FileInfo $fileInfo
@@ -59,35 +29,28 @@ class DkimGenerator implements GeneratorInterface
      * @param DkimCrudService $dkimCrudService
      */
     public function __construct(
-        string $selector,
-        MimeTypes $mimeTypes,
-        FileInfo $fileInfo,
-        DomainDkimBucket $bucket,
-        StorageService $storageService,
-        DkimCrudService $dkimCrudService
-    ) {
-        $this->selector = $selector;
-        $this->mimeTypes = $mimeTypes;
-        $this->fileInfo = $fileInfo;
-        $this->bucket = $bucket;
-        $this->storageService = $storageService;
-        $this->dkimCrudService = $dkimCrudService;
+        private string $selector,
+        private MimeTypes $mimeTypes,
+        private FileInfo $fileInfo,
+        private DomainDkimBucket $bucket,
+        private StorageService $storageService,
+        private DkimCrudService $dkimCrudService
+    ) {}
+
+    /**
+     * @return DnsRecordType
+     */
+    public function getType(): DnsRecordType
+    {
+        return DnsRecordType::asTxt();
     }
 
     /**
-     * @return string
+     * @return DnsRecordSubType
      */
-    public function getType():string
+    public function getSubType(): DnsRecordSubType
     {
-        return DnsRecordType::TXT;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSubType():string
-    {
-        return DnsRecordSubType::DKIM;
+        return DnsRecordSubType::asDkim();
     }
 
     /**
@@ -112,7 +75,7 @@ class DkimGenerator implements GeneratorInterface
             ->getContents();
 
         return new DnsRecord(
-            DnsRecordType::TXT,
+            $this->getType()->getValue(),
             sprintf('%s._domainkey.%s', $this->selector, $domain->getDomain()),
             $this->preparePublicKey($publicKeyContent)
         );
@@ -128,15 +91,15 @@ class DkimGenerator implements GeneratorInterface
     {
         $mimeTypes = $this->mimeTypes->getMimeTypes('pem');
 
-        return $this->storageService->create(
-            (new FileValueObject(
-                $title,
-                $mimeTypes[0] ?? 'text/plain',
-                $stream
-            ))
-                ->withBrand($domain->getBrand())
-                ->withBucket($this->bucket)
-        );
+        return $this->storageService
+            ->withBrand($domain->getBrand())
+            ->create(
+                (new FileValueObject(
+                    $title,
+                    $mimeTypes[0] ?? 'text/plain',
+                    $stream
+                ))->withBucket($this->bucket)
+            );
     }
 
     /**

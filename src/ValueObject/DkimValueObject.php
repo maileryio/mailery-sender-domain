@@ -8,16 +8,6 @@ use Mailery\Storage\Entity\File;
 class DkimValueObject
 {
     /**
-     * @var File
-     */
-    private File $public;
-
-    /**
-     * @var File
-     */
-    private File $private;
-
-    /**
      * @var Domain
      */
     private Domain $domain;
@@ -26,11 +16,10 @@ class DkimValueObject
      * @param File $public
      * @param File $private
      */
-    public function __construct(File $public, File $private)
-    {
-        $this->public = $public;
-        $this->private = $private;
-    }
+    public function __construct(
+        private File $public,
+        private File $private
+    ) {}
 
     /**
      * @return File

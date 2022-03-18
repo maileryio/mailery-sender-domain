@@ -6,7 +6,6 @@ use Yiisoft\Form\FormModel;
 use Yiisoft\Validator\Result;
 use Yiisoft\Validator\Rule\HasLength;
 use Yiisoft\Validator\Rule\Callback;
-use Yiisoft\Form\HtmlOptions\HasLengthHtmlOptions;
 use Mailery\Sender\Domain\Entity\Domain;
 
 class DomainForm extends FormModel
@@ -63,7 +62,7 @@ class DomainForm extends FormModel
     {
         return [
             'domain' => [
-                new HasLengthHtmlOptions(HasLength::rule()->min(3)->max(255)),
+                HasLength::rule()->min(3)->max(255),
                 Callback::rule(static function ($value) {
                     $result = new Result();
 
@@ -74,7 +73,7 @@ class DomainForm extends FormModel
                     if (filter_var('http://' . $value, FILTER_VALIDATE_URL) === false
                         || filter_var(gethostbyname($value), FILTER_VALIDATE_IP) === false
                     ) {
-                         $result->addError('Domain invalid or not exists.');
+                        $result->addError('Domain invalid or not exists.');
                     }
 
                     return $result;

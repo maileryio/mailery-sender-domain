@@ -6,7 +6,6 @@ use Mailery\Activity\Log\Entity\LoggableEntityInterface;
 use Mailery\Activity\Log\Entity\LoggableEntityTrait;
 use Mailery\Sender\Domain\Entity\Domain;
 use Mailery\Common\Entity\RoutableEntityInterface;
-use Mesour\DnsChecker\DnsRecordType;
 use Mesour\DnsChecker\IDnsRecord;
 use Mailery\Sender\Domain\Repository\DnsRecordRepository;
 use Mailery\Activity\Log\Mapper\LoggableMapper;
@@ -14,6 +13,9 @@ use Cycle\Annotated\Annotation\Relation\BelongsTo;
 use Cycle\ORM\Entity\Behavior;
 use Cycle\Annotated\Annotation\Entity;
 use Cycle\Annotated\Annotation\Column;
+use Mailery\Sender\Domain\Enum\DnsRecordStatus;
+use Mailery\Sender\Domain\Enum\DnsRecordType;
+use Mailery\Sender\Domain\Enum\DnsRecordSubType;
 
 #[Entity(
     table: 'domain_dns_records',
@@ -28,25 +30,12 @@ use Cycle\Annotated\Annotation\Column;
     field: 'updatedAt',
     column: 'updated_at'
 )]
-class DnsRecord implements RoutableEntityInterface, LoggableEntityInterface, IDnsRecord
+class DnsRecord implements RoutableEntityInterface, LoggableEntityInterface
 {
     use LoggableEntityTrait;
 
-    const STATUS_PENDING = 'pending';
-    const STATUS_FOUND = 'found';
-    const STATUS_NOT_FOUND = 'not_found';
-
     #[Column(type: 'primary')]
     private int $id;
-
-    #[BelongsTo(target: Domain::class)]
-    private Domain $domain;
-
-    #[Column(type: 'string(255)')]
-    private string $type;
-
-    #[Column(type: 'string(255)')]
-    private string $subType;
 
     #[Column(type: 'string(255)')]
     private string $name;
@@ -54,8 +43,17 @@ class DnsRecord implements RoutableEntityInterface, LoggableEntityInterface, IDn
     #[Column(type: 'text')]
     private string $content;
 
-    #[Column(type: 'enum(pending, found, not_found)')]
-    private string $status;
+    #[BelongsTo(target: Domain::class)]
+    private Domain $domain;
+
+    #[Column(type: 'string(255)', typecast: DnsRecordType::class)]
+    private DnsRecordType $type;
+
+    #[Column(type: 'string(255)', typecast: DnsRecordSubType::class)]
+    private DnsRecordSubType $subType;
+
+    #[Column(type: 'enum(pending, found, not_found)', typecast: DnsRecordStatus::class)]
+    private DnsRecordStatus $status;
 
     #[Column(type: 'datetime')]
     private \DateTimeImmutable $createdAt;
@@ -68,7 +66,7 @@ class DnsRecord implements RoutableEntityInterface, LoggableEntityInterface, IDn
      */
     public function __toString(): string
     {
-        return 'DNS Record #' . $this->getId();
+        return 'DNS Record #' . $this->getObjectId();
     }
 
     /**
@@ -89,65 +87,6 @@ class DnsRecord implements RoutableEntityInterface, LoggableEntityInterface, IDn
 
         return $this;
     }
-
-    /**
-     * @return Domain
-     */
-    public function getDomain(): Domain
-    {
-        return $this->domain;
-    }
-
-    /**
-     * @param Domain $domain
-     * @return self
-     */
-    public function setDomain(Domain $domain): self
-    {
-        $this->domain = $domain;
-        $this->domain->getDnsRecords()->add($this);
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    /**
-     * @param string $type
-     * @return self
-     */
-    public function setType(string $type): self
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSubType(): string
-    {
-        return $this->subType;
-    }
-
-    /**
-     * @param string $subType
-     * @return self
-     */
-    public function setSubType(string $subType): self
-    {
-        $this->subType = $subType;
-
-        return $this;
-    }
-
 
     /**
      * @return string
@@ -188,62 +127,80 @@ class DnsRecord implements RoutableEntityInterface, LoggableEntityInterface, IDn
     }
 
     /**
-     * @return string
+     * @return Domain
      */
-    public function getStatus(): string
+    public function getDomain(): Domain
     {
-        return $this->status;
+        return $this->domain;
     }
 
     /**
-     * @param string $status
+     * @param Domain $domain
      * @return self
      */
-    public function setStatus(string $status): self
+    public function setDomain(Domain $domain): self
     {
-        $this->status = $status;
+        $this->domain = $domain;
+        $this->domain->getDnsRecords()->add($this);
 
         return $this;
     }
 
     /**
-     * @return bool
+     * @return DnsRecordType
      */
-    public function isMx(): bool
+    public function getType(): DnsRecordType
     {
-        return $this->getType() === DnsRecordType::MX;
+        return $this->type;
     }
 
     /**
-     * @return bool
+     * @param DnsRecordType $type
+     * @return self
      */
-    public function isSpf(): bool
+    public function setType(DnsRecordType $type): self
     {
-        return $this->getType() === DnsRecordType::SPF;
+        $this->type = $type;
+
+        return $this;
     }
 
     /**
-     * @return bool
+     * @return DnsRecordSubType
      */
-    public function isPending(): bool
+    public function getSubType(): DnsRecordSubType
     {
-        return $this->getStatus() === self::STATUS_PENDING;
+        return $this->subType;
     }
 
     /**
-     * @return bool
+     * @param DnsRecordSubType $subType
+     * @return self
      */
-    public function isFound(): bool
+    public function setSubType(DnsRecordSubType $subType): self
     {
-        return $this->getStatus() === self::STATUS_FOUND;
+        $this->subType = $subType;
+
+        return $this;
     }
 
     /**
-     * @return bool
+     * @return DnsRecordStatus
      */
-    public function isNotFound(): bool
+    public function getStatus(): DnsRecordStatus
     {
-        return $this->getStatus() === self::STATUS_NOT_FOUND;
+        return $this->status;
+    }
+
+    /**
+     * @param DnsRecordStatus $status
+     * @return self
+     */
+    public function setStatus(DnsRecordStatus $status): self
+    {
+        $this->status = $status;
+
+        return $this;
     }
 
     /**

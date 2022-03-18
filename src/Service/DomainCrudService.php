@@ -3,9 +3,9 @@
 namespace Mailery\Sender\Domain\Service;
 
 use Cycle\ORM\ORMInterface;
-use Cycle\ORM\Transaction;
 use Mailery\Sender\Domain\Entity\Domain;
 use Mailery\Sender\Domain\Entity\DnsRecord;
+use Mailery\Sender\Domain\Enum\DnsRecordStatus;
 use Mailery\Sender\Domain\ValueObject\DomainValueObject;
 use Mailery\Sender\Domain\Model\GeneratorList;
 use Mailery\Sender\Domain\Generator\GeneratorInterface;
@@ -68,26 +68,12 @@ class DomainCrudService
      */
     public function update(Domain $domain, DomainValueObject $valueObject): Domain
     {
-        $domain = $domain
-            ->setDomain($valueObject->getDomain())
-        ;
-
-        $transaction = new Transaction($this->orm);
-        $transaction->persist($domain);
-
-        foreach ($domain->getDnsRecords() as $entity) {
-            $transaction->delete($entity);
+        if ($valueObject->getDomain() === $domain->getDomain()) {
+            return $domain;
         }
 
-        $this->buildDnsRecords($domain);
-
-        foreach ($domain->getDnsRecords() as $entity) {
-            $transaction->persist($entity);
-        }
-
-        $transaction->run();
-
-        return $domain;
+        $this->delete($domain);
+        return $this->create($valueObject);
     }
 
     /**
@@ -97,7 +83,7 @@ class DomainCrudService
     public function delete(Domain $domain): void
     {
         (new EntityWriter($this->orm))->delete([
-            ...($domain->getDnsRecords()->toArray()),
+            ...$domain->getDnsRecords()->toArray(),
             $domain,
         ]);
     }
@@ -118,7 +104,7 @@ class DomainCrudService
                     ->setSubtype($generator->getSubType())
                     ->setName($dnsRecord->getName())
                     ->setContent($dnsRecord->getContent())
-                    ->setStatus(DnsRecord::STATUS_PENDING);
+                    ->setStatus(DnsRecordStatus::asPending());
             })
             ->toArray();
     }

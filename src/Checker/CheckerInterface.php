@@ -3,19 +3,21 @@
 namespace Mailery\Sender\Domain\Checker;
 
 use Mesour\DnsChecker\DnsRecordSet;
+use Mailery\Sender\Domain\Enum\DnsRecordType;
+use Mailery\Sender\Domain\Enum\DnsRecordSubType;
 use Mailery\Sender\Domain\Entity\DnsRecord;
 
 interface CheckerInterface
 {
     /**
-     * @return string
+     * @return DnsRecordType
      */
-    public function getType():string;
+    public function getType(): DnsRecordType;
 
     /**
-     * @return string
+     * @return DnsRecordSubType
      */
-    public function getSubType():string;
+    public function getSubType(): DnsRecordSubType;
 
     /**
      * @param DnsRecord $dnsRecord
