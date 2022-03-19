@@ -36,8 +36,7 @@ use Yiisoft\Yii\Widgets\ContentDecorator;
         <h3 class="h6">Sending domain</h3>
         <div class="mb-4"></div>
 
-        <?= $field->text($form, 'domain')
-                ->autofocus(); ?>
+        <?= $field->text($form, 'domain')->autofocus(); ?>
 
         <?= $field->submitButton()
                 ->class('btn btn-primary float-right mt-2')
