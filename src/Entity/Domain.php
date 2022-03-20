@@ -240,7 +240,7 @@ class Domain implements RoutableEntityInterface, LoggableEntityInterface
         }
 
         return $this->getDnsRecords()->filter(function (DnsRecord $dnsRecord) {
-            return !$dnsRecord->isFound();
+            return !$dnsRecord->getStatus()->isFound();
         })->isEmpty();
     }
 }
