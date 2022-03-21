@@ -4,12 +4,12 @@ namespace Mailery\Sender\Domain\Checker;
 
 use Mailery\Sender\Domain\Checker\CheckerInterface;
 use Mesour\DnsChecker\DnsRecordSet;
-use Mailery\Sender\Domain\Enum\DnsRecordType;
+use Mailery\Sender\Domain\Field\DnsRecordType;
 use Mesour\DnsChecker\IDnsRecord;
 use Mailery\Sender\Domain\Entity\DnsRecord;
-use Mailery\Sender\Domain\Enum\DnsRecordSubType;
-use SPFLib\Term\Mechanism;
+use Mailery\Sender\Domain\Field\DnsRecordSubType;
 use SPFLib\Term\Mechanism\IncludeMechanism;
+use SPFLib\Decoder;
 
 class SpfChecker implements CheckerInterface
 {
@@ -44,20 +44,24 @@ class SpfChecker implements CheckerInterface
     public function check(DnsRecord $dnsRecord, DnsRecordSet $recordSet): bool
     {
         if (!$dnsRecord->getType()->isSame($this->getType())
-            || $dnsRecord->getSubType()->isSame($this->getSubType())
+            || !$dnsRecord->getSubType()->isSame($this->getSubType())
         ) {
             return false;
         }
-
-        $include = (string) (new IncludeMechanism(Mechanism::QUALIFIER_PASS, $this->domainSpec));
 
         foreach ($recordSet->getRecordsByType($this->getType()) as $record) {
             /** @var IDnsRecord $record */
             if ($record->getName() === $dnsRecord->getName()
                 && strpos(strtolower($record->getContent()), 'v=spf1') === 0
-                && strpos($record->getContent(), $include) !== false
+                && ($spfRecord = (new Decoder())->getRecordFromTXT($record->getContent())) !== null
             ) {
-                return true;
+                foreach ($spfRecord->getMechanisms() as $mechanism) {
+                    if ($mechanism instanceof IncludeMechanism
+                        && (string) $mechanism->getDomainSpec() === $this->domainSpec
+                    ) {
+                        return true;
+                    }
+                }
             }
         }
 

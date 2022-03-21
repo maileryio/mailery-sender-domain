@@ -3,7 +3,7 @@
 namespace Mailery\Sender\Domain\Service;
 
 use Mailery\Sender\Domain\Entity\DnsRecord;
-use Mailery\Sender\Domain\Enum\DnsRecordStatus;
+use Mailery\Sender\Domain\Field\DnsRecordStatus;
 use Mesour\DnsChecker\DnsChecker;
 use Mesour\DnsChecker\DnsRecordRequest;
 use Mesour\DnsChecker\DnsRecordType;

@@ -3,8 +3,8 @@
 namespace Mailery\Sender\Domain\Generator;
 
 use Mesour\DnsChecker\DnsRecord;
-use Mailery\Sender\Domain\Enum\DnsRecordType;
-use Mailery\Sender\Domain\Enum\DnsRecordSubType;
+use Mailery\Sender\Domain\Field\DnsRecordType;
+use Mailery\Sender\Domain\Field\DnsRecordSubType;
 use Mailery\Sender\Domain\Generator\GeneratorInterface;
 use Mailery\Storage\Service\StorageService;
 use Mailery\Storage\ValueObject\FileValueObject;

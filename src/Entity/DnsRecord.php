@@ -6,16 +6,15 @@ use Mailery\Activity\Log\Entity\LoggableEntityInterface;
 use Mailery\Activity\Log\Entity\LoggableEntityTrait;
 use Mailery\Sender\Domain\Entity\Domain;
 use Mailery\Common\Entity\RoutableEntityInterface;
-use Mesour\DnsChecker\IDnsRecord;
 use Mailery\Sender\Domain\Repository\DnsRecordRepository;
 use Mailery\Activity\Log\Mapper\LoggableMapper;
 use Cycle\Annotated\Annotation\Relation\BelongsTo;
 use Cycle\ORM\Entity\Behavior;
 use Cycle\Annotated\Annotation\Entity;
 use Cycle\Annotated\Annotation\Column;
-use Mailery\Sender\Domain\Enum\DnsRecordStatus;
-use Mailery\Sender\Domain\Enum\DnsRecordType;
-use Mailery\Sender\Domain\Enum\DnsRecordSubType;
+use Mailery\Sender\Domain\Field\DnsRecordStatus;
+use Mailery\Sender\Domain\Field\DnsRecordType;
+use Mailery\Sender\Domain\Field\DnsRecordSubType;
 
 #[Entity(
     table: 'domain_dns_records',

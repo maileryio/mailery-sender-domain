@@ -3,8 +3,8 @@
 namespace Mailery\Sender\Domain\Checker;
 
 use Mesour\DnsChecker\DnsRecordSet;
-use Mailery\Sender\Domain\Enum\DnsRecordType;
-use Mailery\Sender\Domain\Enum\DnsRecordSubType;
+use Mailery\Sender\Domain\Field\DnsRecordType;
+use Mailery\Sender\Domain\Field\DnsRecordSubType;
 use Mailery\Sender\Domain\Entity\DnsRecord;
 
 interface CheckerInterface

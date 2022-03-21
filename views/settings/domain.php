@@ -3,7 +3,6 @@
 use Mailery\Web\Widget\FlashMessage;
 use Mailery\Sender\Domain\Entity\DnsRecord;
 use Yiisoft\Form\Widget\Form;
-use Yiisoft\Html\Html;
 use Yiisoft\Yii\Widgets\ContentDecorator;
 
 /** @var Yiisoft\Yii\WebView $this */

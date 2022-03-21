@@ -1,6 +1,6 @@
 <?php
 
-namespace Mailery\Sender\Domain\Enum;
+namespace Mailery\Sender\Domain\Field;
 
 use Yiisoft\Translator\TranslatorInterface;
 

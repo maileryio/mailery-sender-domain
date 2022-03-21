@@ -4,8 +4,8 @@ namespace Mailery\Sender\Domain\Checker;
 
 use Mailery\Sender\Domain\Checker\CheckerInterface;
 use Mesour\DnsChecker\DnsRecordSet;
-use Mailery\Sender\Domain\Enum\DnsRecordType;
-use Mailery\Sender\Domain\Enum\DnsRecordSubType;
+use Mailery\Sender\Domain\Field\DnsRecordType;
+use Mailery\Sender\Domain\Field\DnsRecordSubType;
 use Mailery\Sender\Domain\Entity\DnsRecord;
 
 class MxChecker implements CheckerInterface
@@ -34,7 +34,7 @@ class MxChecker implements CheckerInterface
     public function check(DnsRecord $dnsRecord, DnsRecordSet $recordSet): bool
     {
         if (!$dnsRecord->getType()->isSame($this->getType())
-            || $dnsRecord->getSubType()->isSame($this->getSubType())
+            || !$dnsRecord->getSubType()->isSame($this->getSubType())
         ) {
             return false;
         }

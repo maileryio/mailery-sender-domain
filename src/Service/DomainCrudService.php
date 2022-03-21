@@ -5,7 +5,7 @@ namespace Mailery\Sender\Domain\Service;
 use Cycle\ORM\ORMInterface;
 use Mailery\Sender\Domain\Entity\Domain;
 use Mailery\Sender\Domain\Entity\DnsRecord;
-use Mailery\Sender\Domain\Enum\DnsRecordStatus;
+use Mailery\Sender\Domain\Field\DnsRecordStatus;
 use Mailery\Sender\Domain\ValueObject\DomainValueObject;
 use Mailery\Sender\Domain\Model\GeneratorList;
 use Mailery\Sender\Domain\Generator\GeneratorInterface;

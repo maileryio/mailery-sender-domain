@@ -10,8 +10,8 @@ use SPFLib\Term\Mechanism\AllMechanism;
 use SPFLib\Term\Mechanism\MxMechanism;
 use SPFLib\Term\Mechanism\IncludeMechanism;
 use Mesour\DnsChecker\DnsRecord;
-use Mailery\Sender\Domain\Enum\DnsRecordType;
-use Mailery\Sender\Domain\Enum\DnsRecordSubType;
+use Mailery\Sender\Domain\Field\DnsRecordType;
+use Mailery\Sender\Domain\Field\DnsRecordSubType;
 use Mailery\Sender\Domain\Generator\GeneratorInterface;
 use Mailery\Sender\Domain\Entity\Domain;
 
