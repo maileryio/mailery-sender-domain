@@ -27,7 +27,7 @@ use Yiisoft\Yii\Widgets\ContentDecorator;
 <div class="row">
     <div class="col-12 col-xl-4">
         <?= Form::widget()
-                ->action($urlGenerator->generate('/brand/settings/domain'))
+                ->action($url->generate('/brand/settings/domain'))
                 ->csrf($csrf)
                 ->id('sender-domain-form')
                 ->begin(); ?>
@@ -99,7 +99,7 @@ use Yiisoft\Yii\Widgets\ContentDecorator;
             </div>
 
             <?= Form::widget()
-                ->action($urlGenerator->generate('/brand/settings/check-dns'))
+                ->action($url->generate('/brand/settings/check-dns'))
                 ->csrf($csrf)
                 ->id('sender-domain-check-dns-form')
                 ->begin(); ?>
