@@ -23,7 +23,7 @@ use Cycle\Annotated\Annotation\Relation\HasOne;
 #[Entity(
     table: 'domains',
     repository: DomainRepository::class,
-    mapper: LoggableMapper::class
+    mapper: LoggableMapper::class,
 )]
 #[Behavior\CreatedAt(
     field: 'createdAt',

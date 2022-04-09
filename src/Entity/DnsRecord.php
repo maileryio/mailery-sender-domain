@@ -19,7 +19,7 @@ use Mailery\Sender\Domain\Field\DnsRecordSubType;
 #[Entity(
     table: 'domain_dns_records',
     repository: DnsRecordRepository::class,
-    mapper: LoggableMapper::class
+    mapper: LoggableMapper::class,
 )]
 #[Behavior\CreatedAt(
     field: 'createdAt',

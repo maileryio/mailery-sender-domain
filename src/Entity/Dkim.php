@@ -14,7 +14,7 @@ use Cycle\Annotated\Annotation\Relation\BelongsTo;
 
 #[Entity(
     table: 'domain_dkim',
-    mapper: LoggableMapper::class
+    mapper: LoggableMapper::class,
 )]
 #[Behavior\CreatedAt(
     field: 'createdAt',
