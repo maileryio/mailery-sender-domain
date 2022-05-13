@@ -17,38 +17,39 @@ use Yiisoft\Yii\Widgets\ContentDecorator;
     ->viewFile('@vendor/maileryio/mailery-brand/views/settings/_layout.php')
     ->begin(); ?>
 
-<div class="mb-5"></div>
+<div class="mb-2"></div>
 <div class="row">
-    <div class="col-12 col-xl-4">
+    <div class="col-12">
         <?= FlashMessage::widget(); ?>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-12 col-xl-4">
+    <div class="col-12">
         <?= Form::widget()
                 ->action($url->generate('/brand/settings/domain'))
                 ->csrf($csrf)
                 ->id('sender-domain-form')
                 ->begin(); ?>
 
-        <h3 class="h6">Sending domain</h3>
-        <div class="mb-4"></div>
+        <h6 class="font-weight-bold">Sending domain</h6>
+        <div class="mb-3"></div>
 
         <?= $field->text($form, 'domain')->autofocus(); ?>
 
         <?= $field->submitButton()
                 ->class('btn btn-primary float-right mt-2')
-                ->value('Save'); ?>
+                ->value('Save changes'); ?>
 
         <?= Form::end(); ?>
     </div>
 </div>
 
 <?php if ($domain !== null) { ?>
+    <div class="mb-4"></div>
     <div class="row">
-        <div class="col-12 col-xl-4">
-            <h3 class="h6">Domain verification</h3>
+        <div class="col-12">
+            <h6 class="font-weight-bold">Domain verification</h6>
             <div class="form-text text-muted">
                 To improve your sender reputation and deliverability, we strongly recommend that you set up a few DNS records.
                 This will allow us to sign outgoing email using DKIM and DomainKeys, and will inform your contacts' email providers that we are allowed to send your emails.
