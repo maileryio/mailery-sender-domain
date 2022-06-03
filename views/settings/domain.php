@@ -68,7 +68,7 @@ use Yiisoft\Yii\Widgets\ContentDecorator;
 
                     foreach($dnsRecords as $index => $dnsRecord) {
                     /** @var DnsRecord $dnsRecord */
-                    ?><b-card no-body class="mb-1">
+                    ?><b-card no-body>
                         <b-card-header header-tag="header" class="p-1" role="tab">
                             <b-button v-b-toggle.check-dns-<?= $index ?>>
                                 <?= $dnsRecord->getSubType()->getLabel() ?>
