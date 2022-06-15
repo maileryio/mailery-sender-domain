@@ -18,9 +18,13 @@ class DnsRecordStatus
     /**
      * @param string $value
      */
-    public function __construct(
+    private function __construct(
         private string $value
-    ) {}
+    ) {
+        if (!in_array($value, self::getKeys())) {
+            throw new \InvalidArgumentException('Invalid passed value: ' . $value);
+        }
+    }
 
     /**
      * @return string
@@ -28,6 +32,18 @@ class DnsRecordStatus
     public function __toString(): string
     {
         return $this->value;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getKeys(): array
+    {
+        return [
+            self::PENDING,
+            self::FOUND,
+            self::NOT_FOUND,
+        ];
     }
 
     /**
