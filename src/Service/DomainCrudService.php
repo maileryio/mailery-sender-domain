@@ -2,7 +2,7 @@
 
 namespace Mailery\Sender\Domain\Service;
 
-use Cycle\ORM\ORMInterface;
+use Cycle\ORM\EntityManagerInterface;
 use Mailery\Sender\Domain\Entity\Domain;
 use Mailery\Sender\Domain\Entity\DnsRecord;
 use Mailery\Sender\Domain\Field\DnsRecordStatus;
@@ -20,11 +20,11 @@ class DomainCrudService
     private Brand $brand;
 
     /**
-     * @param ORMInterface $orm
+     * @param EntityManagerInterface $entityManager
      * @param GeneratorList $generatorList
      */
     public function __construct(
-        private ORMInterface $orm,
+        private EntityManagerInterface $entityManager,
         private GeneratorList $generatorList
     ) {}
 
@@ -53,7 +53,7 @@ class DomainCrudService
 
         $this->buildDnsRecords($domain);
 
-        (new EntityWriter($this->orm))->write([
+        (new EntityWriter($this->entityManager))->write([
             $domain,
             ...$domain->getDnsRecords(),
         ]);
@@ -82,7 +82,7 @@ class DomainCrudService
      */
     public function delete(Domain $domain): void
     {
-        (new EntityWriter($this->orm))->delete([
+        (new EntityWriter($this->entityManager))->delete([
             ...$domain->getDnsRecords()->toArray(),
             $domain,
         ]);

@@ -2,8 +2,9 @@
 
 use Mailery\Web\Widget\FlashMessage;
 use Mailery\Sender\Domain\Entity\DnsRecord;
-use Yiisoft\Form\Widget\Form;
+use Yiisoft\Html\Tag\Form;
 use Yiisoft\Yii\Widgets\ContentDecorator;
+use Yiisoft\Form\Field;
 
 /** @var Yiisoft\Yii\WebView $this */
 /** @var Psr\Http\Message\ServerRequestInterface $request */
@@ -26,22 +27,21 @@ use Yiisoft\Yii\Widgets\ContentDecorator;
 
 <div class="row">
     <div class="col-12">
-        <?= Form::widget()
-                ->action($url->generate('/brand/settings/domain'))
+        <?= Form::tag()
                 ->csrf($csrf)
                 ->id('sender-domain-form')
-                ->begin(); ?>
+                ->post($url->generate('/brand/settings/domain'))
+                ->open(); ?>
 
         <h6 class="font-weight-bold">Sending domain</h6>
         <div class="mb-3"></div>
 
-        <?= $field->text($form, 'domain')->autofocus(); ?>
+        <?= Field::text($form, 'domain')->autofocus(); ?>
 
-        <?= $field->submitButton()
-                ->class('btn btn-primary float-right mt-2')
-                ->value('Save changes'); ?>
+        <?= Field::submitButton()
+                ->content('Save changes'); ?>
 
-        <?= Form::end(); ?>
+        <?= Form::tag()->close(); ?>
     </div>
 </div>
 
@@ -99,17 +99,16 @@ use Yiisoft\Yii\Widgets\ContentDecorator;
                 } ?>
             </div>
 
-            <?= Form::widget()
-                ->action($url->generate('/brand/settings/check-dns'))
-                ->csrf($csrf)
-                ->id('sender-domain-check-dns-form')
-                ->begin(); ?>
+            <?= Form::tag()
+                    ->csrf($csrf)
+                    ->id('sender-domain-check-dns-form')
+                    ->post($url->generate('/brand/settings/check-dns'))
+                    ->open(); ?>
 
-            <?= $field->submitButton()
-                ->class('btn btn-primary float-right mt-2')
-                ->value('Check DNS records'); ?>
+            <?= Field::submitButton()
+                    ->content('Check DNS records'); ?>
 
-            <?= Form::end(); ?>
+            <?= Form::tag()->close(); ?>
         </div>
     </div>
 <?php } ?>

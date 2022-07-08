@@ -8,7 +8,7 @@ use Mesour\DnsChecker\DnsChecker;
 use Mesour\DnsChecker\DnsRecordRequest;
 use Mesour\DnsChecker\DnsRecordType;
 use Mesour\DnsChecker\Providers\DnsRecordProvider;
-use Cycle\ORM\ORMInterface;
+use Cycle\ORM\EntityManagerInterface;
 use Yiisoft\Yii\Cycle\Data\Writer\EntityWriter;
 use Mailery\Sender\Domain\Model\CheckerList;
 use Mailery\Sender\Domain\Checker\CheckerInterface;
@@ -16,25 +16,12 @@ use Mailery\Sender\Domain\Checker\CheckerInterface;
 class DnsCheckerService
 {
     /**
-     * @var ORMInterface
-     */
-    private ORMInterface $orm;
-
-    /**
-     * @var CheckerList
-     */
-    private CheckerList $checkerList;
-
-    /**
-     * @param ORMInterface $orm
+     * @param EntityManagerInterface $entityManager
      */
     public function __construct(
-        ORMInterface $orm,
-        CheckerList $checkerList
-    ) {
-        $this->orm = $orm;
-        $this->checkerList = $checkerList;
-    }
+        private EntityManagerInterface $entityManager,
+        private CheckerList $checkerList
+    ) {}
 
     /**
      * @param string $domain
@@ -66,7 +53,7 @@ class DnsCheckerService
             }
         }
 
-        (new EntityWriter($this->orm))->write([
+        (new EntityWriter($this->entityManager))->write([
             ...$dnsRecords,
         ]);
     }

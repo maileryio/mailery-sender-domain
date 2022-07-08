@@ -2,7 +2,7 @@
 
 namespace Mailery\Sender\Domain\Service;
 
-use Cycle\ORM\ORMInterface;
+use Cycle\ORM\EntityManagerInterface;
 use Mailery\Sender\Domain\Entity\Dkim;
 use Mailery\Sender\Domain\ValueObject\DkimValueObject;
 use Yiisoft\Yii\Cycle\Data\Writer\EntityWriter;
@@ -10,17 +10,11 @@ use Yiisoft\Yii\Cycle\Data\Writer\EntityWriter;
 class DkimCrudService
 {
     /**
-     * @var ORMInterface
+     * @param EntityManagerInterface $entityManager
      */
-    private ORMInterface $orm;
-
-    /**
-     * @param ORMInterface $orm
-     */
-    public function __construct(ORMInterface $orm)
-    {
-        $this->orm = $orm;
-    }
+    public function __construct(
+        private EntityManagerInterface $entityManager
+    ) {}
 
     /**
      * @param DkimValueObject $valueObject
@@ -34,7 +28,7 @@ class DkimCrudService
             ->setDomain($valueObject->getDomain())
         ;
 
-        (new EntityWriter($this->orm))->write([
+        (new EntityWriter($this->entityManager))->write([
             $dkim,
         ]);
 
