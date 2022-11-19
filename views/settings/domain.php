@@ -28,10 +28,10 @@ use Yiisoft\Form\Field;
 <div class="row">
     <div class="col-12">
         <?= Form::tag()
-                ->csrf($csrf)
-                ->id('sender-domain-form')
-                ->post($url->generate('/brand/settings/domain'))
-                ->open(); ?>
+            ->csrf($csrf)
+            ->id('sender-domain-form')
+            ->post($url->generate('/brand/settings/domain'))
+            ->open(); ?>
 
         <h6 class="font-weight-bold">Sending domain</h6>
         <div class="mb-3"></div>
@@ -39,7 +39,7 @@ use Yiisoft\Form\Field;
         <?= Field::text($form, 'domain')->autofocus(); ?>
 
         <?= Field::submitButton()
-                ->content('Save changes'); ?>
+            ->content('Save changes'); ?>
 
         <?= Form::tag()->close(); ?>
     </div>
